@@ -2,6 +2,13 @@
 
 return [
 
+    'firebets' => [
+        'games_url' => env(
+            'FIREBETS_GAMES_URL',
+            'https://firebets.net.br/sistema_v2/usuarios/simulador/desktop/jogos.aspx?idesporte=102&idcampeonato=574926',
+        ),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
