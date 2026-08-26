@@ -13,7 +13,7 @@ class FirebetsCollectorTest extends TestCase
     public function test_returns_normalized_1x2_events_from_public_firebets_html(): void
     {
         $this->freezeTime();
-        config()->set('services.firebets.games_url', 'https://firebets.test/games');
+        config()->set('services.bookmakers.firebets.games_url', 'https://firebets.test/games');
         Http::preventStrayRequests();
         Http::fake([
             'https://firebets.test/games' => Http::response($this->firebetsHtml()),
@@ -44,7 +44,7 @@ class FirebetsCollectorTest extends TestCase
 
     public function test_throws_when_the_firebets_page_cannot_be_collected(): void
     {
-        config()->set('services.firebets.games_url', 'https://firebets.test/games');
+        config()->set('services.bookmakers.firebets.games_url', 'https://firebets.test/games');
         Http::preventStrayRequests();
         Http::fake([
             'https://firebets.test/games' => Http::response('', 503),

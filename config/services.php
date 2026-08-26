@@ -2,11 +2,31 @@
 
 return [
 
-    'firebets' => [
-        'games_url' => env(
-            'FIREBETS_GAMES_URL',
-            'https://firebets.net.br/sistema_v2/usuarios/simulador/desktop/jogos.aspx?idesporte=102&idcampeonato=574926',
-        ),
+    'bookmakers' => [
+        'firebets' => [
+            'name' => 'Firebets',
+            'games_url' => env('FIREBETS_GAMES_URL', 'https://firebets.net.br/sistema_v2/usuarios/simulador/desktop/jogos.aspx?idesporte=102&idcampeonato=574926'),
+            'website_url' => 'https://firebets.net.br',
+            'is_primary' => true,
+        ],
+        'chute13' => [
+            'name' => 'Chute13',
+            'games_url' => env('CHUTE13_GAMES_URL', 'https://chute13.net'),
+            'website_url' => 'https://chute13.net',
+            'is_primary' => false,
+        ],
+        'a2bets' => [
+            'name' => 'A2Bets',
+            'games_url' => env('A2BETS_GAMES_URL', 'https://a2bets.com'),
+            'website_url' => 'https://a2bets.com',
+            'is_primary' => false,
+        ],
+        'gbgoldbet' => [
+            'name' => 'GB Gold Bet',
+            'games_url' => env('GBGOLDBET_GAMES_URL', 'https://gbgoldbet.com'),
+            'website_url' => 'https://gbgoldbet.com',
+            'is_primary' => false,
+        ],
     ],
 
     /*

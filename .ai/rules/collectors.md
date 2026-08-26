@@ -8,6 +8,7 @@ paths:
 # Coletores
 
 - Cada fonte deve ter coletor isolado. Nunca faça o comparador ou dashboard depender do HTML, endpoint ou tecnologia de uma casa específica.
+- Enquanto a estrutura pública observada for idêntica, os coletores podem reutilizar o parser HTML comum. Uma mudança em uma fonte deve ser tratada no coletor dela, inclusive com override do parsing quando necessário.
 - Antes da implementação definitiva, realize prova técnica da fonte para identificar HTML, XHR/Fetch, endpoint interno, JavaScript, WebSocket ou real necessidade de automação de navegador.
 - Não presuma API pública e não presuma que fontes diferentes seguem a mesma estrutura.
 - Uma falha em uma fonte deve ser registrada com fonte, horário e causa, sem bloquear a coleta ou exibição das demais fontes.

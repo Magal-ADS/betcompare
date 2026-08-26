@@ -2,15 +2,15 @@
 
 namespace App\Collectors;
 
-final class FirebetsCollector extends PublicHtmlOddsCollector
+final class GBGoldBetCollector extends PublicHtmlOddsCollector
 {
     public function source(): string
     {
-        return 'firebets';
+        return 'gbgoldbet';
     }
 
     protected function gamesUrlConfigKey(): string
     {
-        return 'services.bookmakers.firebets.games_url';
+        return 'services.bookmakers.gbgoldbet.games_url';
     }
 }
