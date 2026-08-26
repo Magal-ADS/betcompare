@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Middleware\RequireInternalAccess;
+use App\Http\Middleware\RequireSuperAdmin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['internal.access' => RequireInternalAccess::class]);
+        $middleware->alias(['super.admin' => RequireSuperAdmin::class]);
+        $middleware->redirectGuestsTo('/login');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

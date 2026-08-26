@@ -2,21 +2,25 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
 class InternalAccessTest extends TestCase
 {
+    use LazilyRefreshDatabase;
+
     /**
      * A basic feature test example.
      */
-    public function test_example(): void
+    public function test_dashboard_requires_an_authenticated_session(): void
     {
-        config()->set('oddradar.access.enabled', true);
-        config()->set('oddradar.access.username', 'operator');
-        config()->set('oddradar.access.password', 'secret');
+        $this->get('/')->assertRedirect(route('login'));
+    }
 
-        $this->get('/')->assertUnauthorized()->assertHeader('WWW-Authenticate', 'Basic realm="OddRadar"');
-        $this->withServerVariables(['PHP_AUTH_USER' => 'operator', 'PHP_AUTH_PW' => 'secret'])
+    public function test_authenticated_operator_can_access_the_dashboard(): void
+    {
+        $this->actingAs(User::factory()->create())
             ->get('/')
             ->assertSee('OddRadar');
     }

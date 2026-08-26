@@ -46,6 +46,8 @@ O sistema continua sendo uma ferramenta interna de monitoramento. Ele não execu
 | `EventMatcher` | Associa eventos somente quando mandante, visitante, mercado, data e horário normalizados coincidem. |
 | `OddsComparisonService` | Mantém as odds individuais e calcula a maior odd concorrente e a diferença da Firebets. |
 | `DashboardController` / `RefreshOddsController` | Exibem o painel e recebem o pedido manual de atualização. |
+| `AuthenticatedSessionController` | Autentica sessões internas com as contas do Laravel. |
+| `UserManagementController` | Permite ao super administrador cadastrar e alterar contas operadoras. |
 
 ## 3. Coleta responsável
 
@@ -148,16 +150,23 @@ Depois de alterar configuração em ambiente já em execução, execute `php art
 
 | Método | Rota | Finalidade |
 | --- | --- | --- |
+| `GET` | `/login` | Exibe a tela de acesso interno. |
+| `POST` | `/login` | Inicia a sessão autenticada. |
+| `POST` | `/logout` | Encerra a sessão atual. |
 | `GET` | `/` | Dashboard de comparação. |
 | `POST` | `/atualizar-odds` | Dispara uma nova coleta manual. |
 | `GET` | `/historico-coletas` | Exibe as execuções de coleta e o estado de cada fonte. |
+| `GET` | `/usuarios` | Lista usuários; exclusiva para super administrador. |
+| `POST` | `/usuarios` | Cria um usuário operador; exclusiva para super administrador. |
+| `PUT` | `/usuarios/{user}` | Atualiza um usuário operador; exclusiva para super administrador. |
 
 ## 10.1 Melhorias operacionais implementadas
 
 - Filtro por equipe e data exibida pela fonte, com ordenação por horário, equipe ou maior/menor diferença.
 - Feedback visual no botão durante a atualização manual.
 - Histórico paginado de coletas e falhas por fonte.
-- Proteção por HTTP Basic Auth configurável por ambiente. Em produção ela é ativada por padrão; configure `ODDRADAR_AUTH_USERNAME` e `ODDRADAR_AUTH_PASSWORD` fora do repositório. Em ambiente local ela permanece desativada por padrão para facilitar o desenvolvimento.
+- Tela de login com sessão segura do Laravel. Todo o painel exige autenticação.
+- Um super administrador inicial pode ser criado via variáveis de ambiente; ele pode criar e editar contas operadoras, sem acesso a recursos de SaaS ou permissões complexas.
 
 ## 11. Configuração de fontes
 
@@ -185,6 +194,7 @@ Comandos usuais:
 ```bash
 docker compose up -d
 docker compose exec -T app php artisan migrate
+docker compose exec -T app php artisan db:seed
 npm install --ignore-scripts
 npm run build
 ```
@@ -210,9 +220,44 @@ docker compose exec -T app php artisan test
 docker compose exec -T app vendor/bin/pint
 ```
 
-## 14. Limitações e próximos cuidados
+## 14. Publicação com Dockploy
 
-- O dashboard ainda não tem mecanismo de autenticação. Antes de publicar fora de ambiente controlado, definir uma proteção simples de acesso para o único operador.
+O `Dockerfile` prepara os assets do Vite durante a imagem e expõe a porta interna `8000`; no Dockploy, publique esse container através de um domínio com HTTPS. Não é necessário expor a porta `8010`, que existe apenas no `docker-compose.yml` local.
+
+Cadastre no Dockploy as variáveis de ambiente de produção, sem versioná-las:
+
+```dotenv
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=base64:...
+APP_URL=https://seu-dominio
+DB_CONNECTION=mysql
+DB_HOST=...
+DB_PORT=3306
+DB_DATABASE=...
+DB_USERNAME=...
+DB_PASSWORD=...
+SESSION_DRIVER=database
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+ODDRADAR_DISPLAY_TIMEZONE=America/Sao_Paulo
+ODDRADAR_SUPER_ADMIN_NAME="Administrador OddRadar"
+ODDRADAR_SUPER_ADMIN_EMAIL=...
+ODDRADAR_SUPER_ADMIN_PASSWORD=...
+```
+
+Na primeira publicação, execute uma única vez no terminal/comando pós-deploy do serviço:
+
+```bash
+php artisan migrate --force
+php artisan db:seed --force
+php artisan config:cache
+```
+
+O seeder só cria o super administrador caso o e-mail ainda não exista; por isso, reexecutá-lo não redefine a senha de uma conta já criada. Após o primeiro deploy, mantenha as variáveis de administrador como segredos do Dockploy e nunca as coloque no Git.
+
+## 15. Limitações e próximos cuidados
+
 - O botão de atualização executa a coleta de forma síncrona. Scheduler, filas e alertas são evoluções posteriores, não requisitos desta entrega.
 - A estabilidade do HTML das fontes deve ser monitorada; mudança de markup exige ajuste no coletor correspondente.
 - Não foram adicionados outros esportes, outros mercados, odds ao vivo, filtros avançados, exportação, API pública, IA, surebets ou execução de apostas.

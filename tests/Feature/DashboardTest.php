@@ -8,6 +8,7 @@ use App\Models\CollectionSourceResult;
 use App\Models\Event;
 use App\Models\Odd;
 use App\Models\SourceEvent;
+use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
@@ -18,6 +19,7 @@ class DashboardTest extends TestCase
 
     public function test_renders_available_odds_and_a_failed_source_without_hiding_the_comparison(): void
     {
+        $this->actingAs(User::factory()->create());
         $this->travelTo(CarbonImmutable::parse('2026-08-26 16:26:00', 'UTC'));
         config()->set('app.display_timezone', 'America/Sao_Paulo');
 

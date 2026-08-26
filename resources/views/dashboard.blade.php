@@ -17,14 +17,21 @@
                     <p class="mt-2 text-slate-400">Monitore suas odds. Compare a concorrência.</p>
                 </div>
 
-                <div class="flex gap-3">
+                <div class="flex flex-wrap gap-3">
+                    @if (auth()->user()?->isSuperAdmin())
+                        <a class="inline-flex items-center justify-center rounded-lg border border-slate-700 px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-slate-800" href="{{ route('users.index') }}">Usuários</a>
+                    @endif
                     <a class="inline-flex items-center justify-center rounded-lg border border-slate-700 px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-slate-800" href="{{ route('collection-history') }}">Histórico</a>
-                <form method="POST" action="{{ route('odds.refresh') }}">
-                    @csrf
-                    <button data-loading-button class="inline-flex w-full items-center justify-center rounded-lg bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-wait disabled:opacity-70 sm:w-auto" type="submit">
-                        <span data-loading-label>Atualizar odds agora</span>
-                    </button>
-                </form>
+                    <form method="POST" action="{{ route('odds.refresh') }}">
+                        @csrf
+                        <button data-loading-button class="inline-flex w-full items-center justify-center rounded-lg bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-wait disabled:opacity-70 sm:w-auto" type="submit">
+                            <span data-loading-label>Atualizar odds agora</span>
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button class="inline-flex items-center justify-center rounded-lg border border-slate-700 px-4 py-3 text-sm font-semibold text-slate-300 hover:bg-slate-800" type="submit">Sair</button>
+                    </form>
                 </div>
             </header>
 
