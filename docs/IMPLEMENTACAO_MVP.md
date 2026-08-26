@@ -150,6 +150,14 @@ Depois de alterar configuração em ambiente já em execução, execute `php art
 | --- | --- | --- |
 | `GET` | `/` | Dashboard de comparação. |
 | `POST` | `/atualizar-odds` | Dispara uma nova coleta manual. |
+| `GET` | `/historico-coletas` | Exibe as execuções de coleta e o estado de cada fonte. |
+
+## 10.1 Melhorias operacionais implementadas
+
+- Filtro por equipe e data exibida pela fonte, com ordenação por horário, equipe ou maior/menor diferença.
+- Feedback visual no botão durante a atualização manual.
+- Histórico paginado de coletas e falhas por fonte.
+- Proteção por HTTP Basic Auth configurável por ambiente. Em produção ela é ativada por padrão; configure `ODDRADAR_AUTH_USERNAME` e `ODDRADAR_AUTH_PASSWORD` fora do repositório. Em ambiente local ela permanece desativada por padrão para facilitar o desenvolvimento.
 
 ## 11. Configuração de fontes
 

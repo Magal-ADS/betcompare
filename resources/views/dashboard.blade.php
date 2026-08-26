@@ -4,6 +4,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>OddRadar — Monitoramento de odds</title>
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="min-h-screen bg-slate-950 text-slate-100">
@@ -15,12 +17,15 @@
                     <p class="mt-2 text-slate-400">Monitore suas odds. Compare a concorrência.</p>
                 </div>
 
+                <div class="flex gap-3">
+                    <a class="inline-flex items-center justify-center rounded-lg border border-slate-700 px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-slate-800" href="{{ route('collection-history') }}">Histórico</a>
                 <form method="POST" action="{{ route('odds.refresh') }}">
                     @csrf
-                    <button class="inline-flex w-full items-center justify-center rounded-lg bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 focus:outline-2 focus:outline-offset-2 focus:outline-cyan-300 sm:w-auto" type="submit">
-                        Atualizar odds agora
+                    <button data-loading-button class="inline-flex w-full items-center justify-center rounded-lg bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-wait disabled:opacity-70 sm:w-auto" type="submit">
+                        <span data-loading-label>Atualizar odds agora</span>
                     </button>
                 </form>
+                </div>
             </header>
 
             @if (session('status'))
@@ -85,6 +90,17 @@
                     </div>
                     <p class="text-xs text-slate-500">Diferença: (Firebets − melhor concorrente) ÷ melhor concorrente</p>
                 </div>
+                <form class="mt-5 grid gap-3 rounded-xl border border-slate-800 bg-slate-900 p-4 sm:grid-cols-4" method="GET" action="{{ route('dashboard') }}">
+                    <input class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500" name="team" value="{{ $filters['team'] ?? '' }}" placeholder="Filtrar por time">
+                    <input class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" type="date" name="date" value="{{ $filters['date'] ?? '' }}" aria-label="Filtrar por data">
+                    <select class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" name="sort">
+                        <option value="time" @selected(($filters['sort'] ?? 'time') === 'time')>Data e horário</option>
+                        <option value="difference_desc" @selected(($filters['sort'] ?? '') === 'difference_desc')>Maior diferença</option>
+                        <option value="difference_asc" @selected(($filters['sort'] ?? '') === 'difference_asc')>Menor diferença</option>
+                        <option value="team" @selected(($filters['sort'] ?? '') === 'team')>Time</option>
+                    </select>
+                    <button class="rounded-lg border border-cyan-400/50 px-4 py-2 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/10" type="submit">Aplicar filtros</button>
+                </form>
 
                 @forelse ($comparisons as $comparison)
                     <article class="mt-5 overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
@@ -158,6 +174,9 @@
                         <p class="mt-2 text-sm text-slate-400">Use “Atualizar odds agora” para coletar as fontes públicas configuradas.</p>
                     </div>
                 @endforelse
+                @if ($comparisons->hasPages())
+                    <div class="mt-6">{{ $comparisons->links() }}</div>
+                @endif
             </section>
         </main>
     </body>

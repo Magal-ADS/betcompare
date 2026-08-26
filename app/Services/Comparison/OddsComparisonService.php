@@ -6,6 +6,7 @@ use App\Models\CollectionRun;
 use App\Models\Event;
 use App\Models\Odd;
 use App\Models\SourceEvent;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
@@ -15,12 +16,19 @@ final class OddsComparisonService
     /**
      * @return Collection<int, array{event: Event, is_compared: bool, selections: Collection<int, array<string, mixed>>}>
      */
-    public function forRun(CollectionRun $collectionRun): Collection
+    public function forRun(CollectionRun $collectionRun, ?string $team = null, ?string $date = null, string $sort = 'time'): Collection
     {
         return Event::query()
             ->whereHas('sourceEvents.odds', function (Builder $query) use ($collectionRun): void {
                 $query->where('collection_run_id', $collectionRun->id);
             })
+            ->when($team, function (Builder $query, string $team): void {
+                $query->where(function (Builder $query) use ($team): void {
+                    $query->where('home_team', 'like', "%{$team}%")
+                        ->orWhere('away_team', 'like', "%{$team}%");
+                });
+            })
+            ->when($date, fn (Builder $query, string $date): Builder => $query->where('event_date', $this->collectionDate($date)))
             ->with([
                 'sourceEvents.bookmaker',
                 'sourceEvents.odds' => function (HasMany $query) use ($collectionRun): void {
@@ -31,7 +39,8 @@ final class OddsComparisonService
             ->orderBy('event_time')
             ->orderBy('home_team')
             ->get()
-            ->map(fn (Event $event): array => $this->eventComparison($event));
+            ->map(fn (Event $event): array => $this->eventComparison($event))
+            ->pipe(fn (Collection $comparisons): Collection => $this->sortComparisons($comparisons, $sort));
     }
 
     /**
@@ -103,5 +112,38 @@ final class OddsComparisonService
             $firebetsOdd < $bestOdd => 'below',
             default => 'equal',
         };
+    }
+
+    /**
+     * @param  Collection<int, array{event: Event, is_compared: bool, selections: Collection<int, array<string, mixed>>}>  $comparisons
+     */
+    private function sortComparisons(Collection $comparisons, string $sort): Collection
+    {
+        return match ($sort) {
+            'team' => $comparisons->sortBy(fn (array $comparison): string => $comparison['event']->home_team)->values(),
+            'difference_asc' => $comparisons->sortBy(fn (array $comparison): float => $this->largestDifference($comparison))->values(),
+            'difference_desc' => $comparisons->sortByDesc(fn (array $comparison): float => $this->largestDifference($comparison))->values(),
+            default => $comparisons,
+        };
+    }
+
+    /** @param array{selections: Collection<int, array<string, mixed>>} $comparison */
+    private function largestDifference(array $comparison): float
+    {
+        return $comparison['selections']->pluck('difference_percent')
+            ->filter(fn (?float $difference): bool => $difference !== null)
+            ->map(fn (float $difference): float => abs($difference))
+            ->max() ?? 0;
+    }
+
+    private function collectionDate(string $date): string
+    {
+        $calendarDate = CarbonImmutable::createFromFormat('Y-m-d', $date);
+        $months = [
+            1 => 'jan', 2 => 'fev', 3 => 'mar', 4 => 'abr', 5 => 'mai', 6 => 'jun',
+            7 => 'jul', 8 => 'ago', 9 => 'set', 10 => 'out', 11 => 'nov', 12 => 'dez',
+        ];
+
+        return $calendarDate->format('d').' '.$months[(int) $calendarDate->format('n')];
     }
 }
