@@ -3,6 +3,9 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#020617">
+        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+        <link rel="apple-touch-icon" href="{{ asset('pwa-icon-192.png') }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 

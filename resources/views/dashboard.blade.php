@@ -4,31 +4,35 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>OddRadar — Monitoramento de odds</title>
+        <meta name="theme-color" content="#020617">
+        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+        <link rel="apple-touch-icon" href="{{ asset('pwa-icon-192.png') }}">
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
         <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="min-h-screen bg-slate-950 text-slate-100">
-        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <main class="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
             <header class="flex flex-col justify-between gap-6 border-b border-slate-800 pb-8 sm:flex-row sm:items-end">
                 <div>
                     <p class="text-sm font-semibold tracking-[0.2em] text-cyan-400">FIREBETS · USO INTERNO</p>
-                    <h1 class="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">OddRadar</h1>
+                    <h1 class="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-4xl">OddRadar</h1>
                     <p class="mt-2 text-slate-400">Monitore suas odds. Compare a concorrência.</p>
                 </div>
 
-                <div class="flex flex-wrap gap-3">
+                <div class="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
                     @if (auth()->user()?->isSuperAdmin())
                         <a class="inline-flex items-center justify-center rounded-lg border border-slate-700 px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-slate-800" href="{{ route('users.index') }}">Usuários</a>
                     @endif
                     <a class="inline-flex items-center justify-center rounded-lg border border-slate-700 px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-slate-800" href="{{ route('collection-history') }}">Histórico</a>
-                    <form method="POST" action="{{ route('odds.refresh') }}">
+                    <button data-pwa-install class="inline-flex items-center justify-center rounded-lg border border-cyan-400/50 px-4 py-3 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/10" type="button" hidden>Instalar app</button>
+                    <form class="contents sm:block" method="POST" action="{{ route('odds.refresh') }}">
                         @csrf
                         <button data-loading-button class="inline-flex w-full items-center justify-center rounded-lg bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-wait disabled:opacity-70 sm:w-auto" type="submit">
                             <span data-loading-label>Atualizar odds agora</span>
                         </button>
                     </form>
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form class="contents sm:block" method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button class="inline-flex items-center justify-center rounded-lg border border-slate-700 px-4 py-3 text-sm font-semibold text-slate-300 hover:bg-slate-800" type="submit">Sair</button>
                     </form>
@@ -57,8 +61,8 @@
                     @forelse ($bookmakers as $bookmaker)
                         @php($result = $sourceResults->get($bookmaker->id))
                         <article class="rounded-xl border border-slate-800 bg-slate-900 p-4">
-                            <div class="flex items-start justify-between gap-3">
-                                <div>
+                            <div class="flex flex-col items-start gap-2 sm:flex-row sm:justify-between sm:gap-3">
+                                <div class="min-w-0">
                                     <h3 class="font-medium text-white">{{ $bookmaker->name }}</h3>
                                     <p class="mt-1 text-sm text-slate-400">
                                         @if ($result?->status === 'completed')
@@ -101,15 +105,15 @@
                     <p class="text-xs text-slate-500">Diferença: (Firebets − melhor concorrente) ÷ melhor concorrente</p>
                 </div>
                 <form class="mt-5 grid gap-3 rounded-xl border border-slate-800 bg-slate-900 p-4 sm:grid-cols-4" method="GET" action="{{ route('dashboard') }}">
-                    <input class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500" name="team" value="{{ $filters['team'] ?? '' }}" placeholder="Filtrar por time">
-                    <input class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" type="date" name="date" value="{{ $filters['date'] ?? '' }}" aria-label="Filtrar por data">
-                    <select class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" name="sort">
+                    <input class="min-w-0 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500" name="team" value="{{ $filters['team'] ?? '' }}" placeholder="Filtrar por time">
+                    <input class="min-w-0 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" type="date" name="date" value="{{ $filters['date'] ?? '' }}" aria-label="Filtrar por data">
+                    <select class="min-w-0 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" name="sort">
                         <option value="time" @selected(($filters['sort'] ?? 'time') === 'time')>Data e horário</option>
                         <option value="difference_desc" @selected(($filters['sort'] ?? '') === 'difference_desc')>Maior diferença</option>
                         <option value="difference_asc" @selected(($filters['sort'] ?? '') === 'difference_asc')>Menor diferença</option>
                         <option value="team" @selected(($filters['sort'] ?? '') === 'team')>Time</option>
                     </select>
-                    <button class="rounded-lg border border-cyan-400/50 px-4 py-2 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/10" type="submit">Aplicar filtros</button>
+                    <button class="w-full rounded-lg border border-cyan-400/50 px-4 py-2 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/10" type="submit">Aplicar filtros</button>
                 </form>
 
                 @forelse ($comparisons as $comparison)
@@ -129,8 +133,9 @@
                             @endif
                         </header>
 
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full text-left text-sm">
+                        <p class="px-4 pt-3 text-xs text-slate-500 sm:hidden">Deslize a tabela para o lado para ver todas as casas.</p>
+                        <div class="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+                            <table class="min-w-[42rem] text-left text-sm sm:min-w-full">
                                 <thead class="bg-slate-950/50 text-xs uppercase tracking-wide text-slate-400">
                                     <tr>
                                         <th class="px-5 py-3 font-medium">Seleção</th>

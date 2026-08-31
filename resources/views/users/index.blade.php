@@ -4,18 +4,21 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Usuários — OddRadar</title>
+        <meta name="theme-color" content="#020617">
+        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+        <link rel="apple-touch-icon" href="{{ asset('pwa-icon-192.png') }}">
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="min-h-screen bg-slate-950 text-slate-100">
-        <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+        <main class="mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
             <header class="flex flex-col justify-between gap-5 border-b border-slate-800 pb-7 sm:flex-row sm:items-end">
                 <div>
                     <p class="text-sm font-semibold tracking-[0.2em] text-cyan-400">FIREBETS · USO INTERNO</p>
                     <h1 class="mt-2 text-3xl font-semibold tracking-tight text-white">Usuários</h1>
                     <p class="mt-2 text-sm text-slate-400">Apenas o super administrador pode criar e editar operadores.</p>
                 </div>
-                <a class="inline-flex items-center justify-center rounded-lg border border-slate-700 px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-slate-800" href="{{ route('dashboard') }}">Voltar ao painel</a>
+                <a class="inline-flex w-full items-center justify-center rounded-lg border border-slate-700 px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-slate-800 sm:w-auto" href="{{ route('dashboard') }}">Voltar ao painel</a>
             </header>
 
             @if (session('status'))
@@ -56,7 +59,7 @@
                 @foreach ($users as $user)
                     <article class="rounded-xl border border-slate-800 bg-slate-900 p-5">
                         @if ($user->isSuperAdmin())
-                            <div class="flex items-center justify-between gap-4">
+                            <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                                 <div>
                                     <h3 class="font-semibold text-white">{{ $user->name }}</h3>
                                     <p class="mt-1 text-sm text-slate-400">{{ $user->email }}</p>
@@ -84,7 +87,7 @@
                                     <input class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm" id="password-confirmation-{{ $user->id }}" name="password_confirmation" type="password" autocomplete="new-password">
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <button class="rounded-lg border border-cyan-400/50 px-4 py-2.5 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/10" type="submit">Salvar alterações</button>
+                                    <button class="w-full rounded-lg border border-cyan-400/50 px-4 py-2.5 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/10 sm:w-auto" type="submit">Salvar alterações</button>
                                 </div>
                             </form>
                         @endif

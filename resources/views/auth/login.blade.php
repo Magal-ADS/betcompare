@@ -4,14 +4,18 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Entrar — OddRadar</title>
+        <meta name="theme-color" content="#020617">
+        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+        <link rel="apple-touch-icon" href="{{ asset('pwa-icon-192.png') }}">
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-slate-100">
-        <main class="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-7 shadow-2xl shadow-slate-950/50 sm:p-8">
+    <body class="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-6 text-slate-100">
+        <main class="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl shadow-slate-950/50 sm:p-8">
             <p class="text-sm font-semibold tracking-[0.2em] text-cyan-400">FIREBETS · USO INTERNO</p>
             <h1 class="mt-2 text-3xl font-semibold text-white">OddRadar</h1>
             <p class="mt-2 text-sm text-slate-400">Entre para consultar o monitoramento de odds.</p>
+            <button data-pwa-install class="mt-5 w-full rounded-lg border border-cyan-400/50 px-4 py-3 text-sm font-semibold text-cyan-200 hover:bg-cyan-400/10" type="button" hidden>Instalar app neste dispositivo</button>
 
             <form class="mt-7 space-y-5" method="POST" action="{{ route('login.store') }}">
                 @csrf
