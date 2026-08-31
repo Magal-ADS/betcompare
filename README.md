@@ -14,7 +14,7 @@ A aplicação ficará disponível em http://localhost:8010.
 ## Comandos úteis
 
 ```bash
-docker compose exec app php artisan test
+docker compose run --rm --no-deps test php artisan test --compact
 docker compose exec app composer install
 docker compose down
 ```

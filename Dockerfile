@@ -26,13 +26,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libicu-dev \
         libonig-dev \
         libzip-dev \
-        default-mysql-client \
+        libpq-dev \
+        libsqlite3-dev \
+        postgresql-client \
     && docker-php-ext-install -j"$(nproc)" \
         bcmath \
         intl \
         mbstring \
         pcntl \
-        pdo_mysql \
+        pdo_pgsql \
+        pdo_sqlite \
         zip \
     && pecl install redis \
     && docker-php-ext-enable redis \

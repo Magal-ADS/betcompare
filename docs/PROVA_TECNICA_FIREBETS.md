@@ -2,7 +2,7 @@
 
 **Data da verificação:** 26/08/2026
 **Status:** concluída para o objetivo mínimo da POC
-**Escopo:** inspeção passiva de conteúdo público; nenhum coletor foi implementado.
+**Escopo:** inspeção passiva de conteúdo público que fundamentou o coletor implementado posteriormente.
 
 ## Objetivo
 

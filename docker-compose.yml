@@ -11,9 +11,9 @@ services:
       APP_ENV: local
       APP_DEBUG: "true"
       APP_URL: http://localhost:8010
-      DB_CONNECTION: mysql
+      DB_CONNECTION: pgsql
       DB_HOST: db
-      DB_PORT: 3306
+      DB_PORT: 5432
       DB_DATABASE: betcompare
       DB_USERNAME: betcompare
       DB_PASSWORD: betcompare
@@ -23,21 +23,34 @@ services:
       db:
         condition: service_healthy
 
-  db:
-    image: mysql:8.4
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
-      MYSQL_DATABASE: betcompare
-      MYSQL_USER: betcompare
-      MYSQL_PASSWORD: betcompare
-      MYSQL_ROOT_PASSWORD: root
+      APP_ENV: testing
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ":memory:"
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
     volumes:
-      - betcompare_mysql_data:/var/lib/mysql
+      - .:/var/www/html
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: betcompare
+      POSTGRES_USER: betcompare
+      POSTGRES_PASSWORD: betcompare
+    volumes:
+      - betcompare_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      test: ["CMD-SHELL", "pg_isready -U betcompare -d betcompare"]
       interval: 5s
       timeout: 3s
       retries: 20
       start_period: 10s
 
 volumes:
-  betcompare_mysql_data:
+  betcompare_postgres_data:

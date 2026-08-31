@@ -83,7 +83,7 @@ As migrations do MVP criam as tabelas abaixo.
 | --- | --- |
 | `bookmakers` | Fontes configuradas, nome, URL e indicação de fonte principal. |
 | `collection_runs` | Uma atualização manual completa e seu status final: `completed`, `partial` ou `failed`. |
-| `collection_source_results` | Resultado individual de cada fonte: status, horário, quantidade de eventos e erro resumido quando aplicável. |
+| `collection_source_results` | Resultado individual de cada fonte: status (`completed`, `empty` ou `failed`), horário, quantidade de eventos e erro resumido quando aplicável. |
 | `events` | Evento padronizado, com equipes originais da primeira ocorrência e chaves normalizadas. |
 | `source_events` | Representação de um evento tal como foi recebido por uma fonte; pode apontar para um evento padronizado. |
 | `odds` | Snapshot 1X2 vinculado a um evento de origem e a uma execução de coleta. |
@@ -129,8 +129,9 @@ Para cada fonte:
 
 1. o sistema executa o coletor isolado;
 2. persiste os eventos e odds se a coleta funcionar;
-3. registra erro se ela falhar;
-4. segue para as fontes restantes.
+3. identifica explicitamente uma fonte que respondeu sem eventos;
+4. registra erro se ela falhar;
+5. segue para as fontes restantes.
 
 Assim, uma falha de A2Bets, por exemplo, não impede a exibição de Firebets, Chute13 e GB Gold Bet. O dashboard mostra o status individual de cada fonte.
 
@@ -183,7 +184,7 @@ Não colocar credenciais no repositório. O MVP não usa credenciais de fontes e
 
 ## 12. Executar localmente
 
-O ambiente local usa Docker, Laravel e MySQL. A aplicação fica disponível em:
+O ambiente local usa Docker, Laravel e PostgreSQL. A aplicação fica disponível em:
 
 ```text
 http://localhost:8010
@@ -216,9 +217,11 @@ Os testes usam dados HTML simulados e não fazem requisições reais às fontes.
 Executar:
 
 ```bash
-docker compose exec -T app php artisan test
+docker compose run --rm --no-deps test php artisan test --compact
 docker compose exec -T app vendor/bin/pint
 ```
+
+O serviço `test` força SQLite em memória. Assim, a suíte não usa nem altera o banco PostgreSQL local.
 
 ## 14. Publicação com Dockploy
 
@@ -231,9 +234,9 @@ APP_ENV=production
 APP_DEBUG=false
 APP_KEY=base64:...
 APP_URL=https://seu-dominio
-DB_CONNECTION=mysql
+DB_CONNECTION=pgsql
 DB_HOST=...
-DB_PORT=3306
+DB_PORT=5432
 DB_DATABASE=...
 DB_USERNAME=...
 DB_PASSWORD=...

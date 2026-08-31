@@ -35,6 +35,12 @@ class DashboardTest extends TestCase
             'website_url' => 'https://chute13.test',
             'is_primary' => false,
         ]);
+        $a2Bets = Bookmaker::create([
+            'slug' => 'a2bets',
+            'name' => 'A2Bets',
+            'website_url' => 'https://a2bets.test',
+            'is_primary' => false,
+        ]);
         $gbGoldBet = Bookmaker::create([
             'slug' => 'gbgoldbet',
             'name' => 'GB Gold Bet',
@@ -59,6 +65,13 @@ class DashboardTest extends TestCase
 
         $this->createOffer($collectionRun, $firebets, $event, 1.85, 3.40, 4.20);
         $this->createOffer($collectionRun, $chute13, $event, 1.90, 3.30, 4.00);
+        CollectionSourceResult::create([
+            'collection_run_id' => $collectionRun->id,
+            'bookmaker_id' => $a2Bets->id,
+            'status' => 'empty',
+            'events_count' => 0,
+            'collected_at' => now(),
+        ]);
         CollectionSourceResult::create([
             'collection_run_id' => $collectionRun->id,
             'bookmaker_id' => $firebets->id,
@@ -89,6 +102,9 @@ class DashboardTest extends TestCase
             ->assertSee('↓ Abaixo')
             ->assertSee('GB Gold Bet')
             ->assertSee('Fonte indisponível nesta coleta')
+            ->assertSee('A2Bets')
+            ->assertSee('Nenhum evento disponível nesta coleta')
+            ->assertSee('Sem eventos')
             ->assertSee('Última atualização: 26/08/2026 13:26');
     }
 

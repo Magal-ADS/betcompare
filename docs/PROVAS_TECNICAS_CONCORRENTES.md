@@ -2,7 +2,7 @@
 
 **Data das verificações:** 26/08/2026
 **Status:** concluídas para o objetivo mínimo da POC
-**Escopo:** inspeção passiva de conteúdo público; nenhum coletor foi implementado nesta etapa.
+**Escopo:** inspeção passiva de conteúdo público que fundamentou os coletores implementados posteriormente.
 
 ## Objetivo
 
@@ -51,5 +51,5 @@ Não há evidência atual que justifique adicionar Node.js/Python com Playwright
 
 - A verificação retrata o conteúdo público acessível em 26/08/2026 e não garante estabilidade futura de markup, URLs, campeonatos ou odds.
 - Nenhum HTML ou payload completo foi armazenado; foram registrados apenas os campos necessários para a avaliação técnica.
-- O `FirebetsCollector` isolado, seu contrato de dados normalizados e testes já foram criados. Os demais coletores devem seguir esse contrato, mantendo suas regras de parsing independentes.
+- Os quatro coletores isolados, seu contrato de dados normalizados e testes foram criados. Eles mantêm regras de parsing independentes, embora compartilhem o parser HTML atual.
 - Falhas futuras de uma fonte devem ser registradas por fonte e não podem interromper a coleta ou a exibição das demais.

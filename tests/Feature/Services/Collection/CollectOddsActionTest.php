@@ -53,6 +53,24 @@ class CollectOddsActionTest extends TestCase
         $this->assertFalse($unmatchedEvent['is_compared']);
     }
 
+    public function test_marks_a_source_without_events_as_empty(): void
+    {
+        $this->mock(OddsCollectorRegistry::class, function ($mock): void {
+            $mock->shouldReceive('all')->once()->andReturn([
+                $this->collector('firebets', []),
+            ]);
+        });
+
+        $collectionRun = app(CollectOddsAction::class)->execute();
+
+        $this->assertSame('completed', $collectionRun->status);
+        $this->assertDatabaseHas('collection_source_results', [
+            'collection_run_id' => $collectionRun->id,
+            'status' => 'empty',
+            'events_count' => 0,
+        ]);
+    }
+
     /**
      * @param  array<int, CollectedOddsEvent>  $events
      */

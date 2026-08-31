@@ -207,13 +207,13 @@ Dashboard
 Preferências atuais:
 
 - Laravel e PHP;
-- MySQL, MariaDB ou banco relacional equivalente;
+- PostgreSQL;
 - Blade para a interface enquanto for suficiente;
 - JavaScript somente quando necessário;
 - Scheduler/Queue do Laravel para tarefas automáticas futuras;
 - um serviço auxiliar em Node.js ou Python com Playwright/Puppeteer somente se alguma fonte realmente exigir automação de navegador.
 
-Evitar tecnologias desnecessárias. O ambiente local atual é Dockerizado com Laravel e MySQL; isso não autoriza implementar recursos além do escopo documentado.
+Evitar tecnologias desnecessárias. O ambiente local atual é Dockerizado com Laravel e PostgreSQL; isso não autoriza implementar recursos além do escopo documentado.
 
 ## Contexto comercial
 
@@ -238,4 +238,4 @@ Prioridades:
 5. dashboard;
 6. atualização dos dados.
 
-No estado atual, esta documentação é o único acréscimo de produto solicitado. Não existem coletores, regras de negócio, telas ou funcionalidades do OddRadar implementados.
+O MVP descrito neste documento está implementado. Consulte [IMPLEMENTACAO_MVP.md](IMPLEMENTACAO_MVP.md) para o estado técnico atual e suas limitações operacionais.

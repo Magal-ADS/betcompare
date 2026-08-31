@@ -63,6 +63,8 @@
                                     <p class="mt-1 text-sm text-slate-400">
                                         @if ($result?->status === 'completed')
                                             {{ $result->events_count }} eventos coletados
+                                        @elseif ($result?->status === 'empty')
+                                            Nenhum evento disponível nesta coleta
                                         @elseif ($result?->status === 'failed')
                                             Fonte indisponível nesta coleta
                                         @else
@@ -73,10 +75,11 @@
                                 <span @class([
                                     'rounded-full px-2.5 py-1 text-xs font-semibold',
                                     'bg-emerald-400/15 text-emerald-300' => $result?->status === 'completed',
+                                    'bg-amber-400/15 text-amber-200' => $result?->status === 'empty',
                                     'bg-rose-400/15 text-rose-300' => $result?->status === 'failed',
                                     'bg-slate-800 text-slate-400' => $result === null,
                                 ])>
-                                    {{ $result?->status === 'completed' ? 'Disponível' : ($result?->status === 'failed' ? 'Falhou' : 'Sem dados') }}
+                                    {{ $result?->status === 'completed' ? 'Disponível' : ($result?->status === 'empty' ? 'Sem eventos' : ($result?->status === 'failed' ? 'Falhou' : 'Sem dados')) }}
                                 </span>
                             </div>
                             @if ($result?->error_message)

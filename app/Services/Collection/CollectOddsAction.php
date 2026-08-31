@@ -23,6 +23,8 @@ final class CollectOddsAction
 
     private const string STATUS_COMPLETED = 'completed';
 
+    private const string STATUS_EMPTY = 'empty';
+
     private const string STATUS_PARTIAL = 'partial';
 
     private const string STATUS_FAILED = 'failed';
@@ -52,7 +54,7 @@ final class CollectOddsAction
                 CollectionSourceResult::create([
                     'collection_run_id' => $collectionRun->id,
                     'bookmaker_id' => $bookmaker->id,
-                    'status' => self::STATUS_COMPLETED,
+                    'status' => $events->isEmpty() ? self::STATUS_EMPTY : self::STATUS_COMPLETED,
                     'events_count' => $events->count(),
                     'collected_at' => now(),
                 ]);
