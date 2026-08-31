@@ -1,6 +1,7 @@
 # OddRadar — Implementação atual do MVP
 
-**Atualizado em:** 26/08/2026  
+**Atualizado em:** 31/08/2026
+
 **Status:** MVP funcional em ambiente local
 
 Este documento descreve o que está efetivamente implementado. Para o objetivo, limites e decisões de produto, consulte também [CONTEXTO_DO_PROJETO.md](CONTEXTO_DO_PROJETO.md) e [LEVANTAMENTO_DE_REQUISITOS.md](LEVANTAMENTO_DE_REQUISITOS.md).
@@ -168,6 +169,8 @@ Depois de alterar configuração em ambiente já em execução, execute `php art
 - Histórico paginado de coletas e falhas por fonte.
 - Tela de login com sessão segura do Laravel. Todo o painel exige autenticação.
 - Um super administrador inicial pode ser criado via variáveis de ambiente; ele pode criar e editar contas operadoras, sem acesso a recursos de SaaS ou permissões complexas.
+- Interface responsiva: cabeçalhos, ações e formulários se reorganizam em telas pequenas; as tabelas extensas preservam a leitura com rolagem lateral orientada.
+- PWA instalável: manifesto, ícones, `service worker`, tema do aplicativo e botão de instalação nos navegadores que expõem o prompt. O modo offline mostra uma página de ausência de conexão e não guarda dashboard, sessões ou odds em cache.
 
 ## 11. Configuração de fontes
 
@@ -225,7 +228,7 @@ O serviço `test` força SQLite em memória. Assim, a suíte não usa nem altera
 
 ## 14. Publicação com Dockploy
 
-O `Dockerfile` prepara os assets do Vite durante a imagem e expõe a porta interna `8000`; no Dockploy, publique esse container através de um domínio com HTTPS. Não é necessário expor a porta `8010`, que existe apenas no `docker-compose.yml` local.
+O `Dockerfile` prepara os assets do Vite durante a imagem e expõe a porta interna `8000`; no Dockploy, publique esse container através de um domínio com HTTPS. HTTPS é necessário em produção para o `service worker` e a instalação como PWA; `localhost` é a exceção aceita pelos navegadores durante o desenvolvimento. Não é necessário expor a porta `8010`, que existe apenas no `docker-compose.yml` local.
 
 Cadastre no Dockploy as variáveis de ambiente de produção, sem versioná-las:
 
@@ -264,3 +267,4 @@ O seeder só cria o super administrador caso o e-mail ainda não exista; por iss
 - O botão de atualização executa a coleta de forma síncrona. Scheduler, filas e alertas são evoluções posteriores, não requisitos desta entrega.
 - A estabilidade do HTML das fontes deve ser monitorada; mudança de markup exige ajuste no coletor correspondente.
 - Não foram adicionados outros esportes, outros mercados, odds ao vivo, filtros avançados, exportação, API pública, IA, surebets ou execução de apostas.
+- A PWA é uma versão instalável da aplicação web; não há aplicativo nativo Android ou iOS. Em navegadores compatíveis, a instalação é oferecida pelo botão ou pelo menu do navegador; no Safari/iOS, use “Adicionar à Tela de Início”.

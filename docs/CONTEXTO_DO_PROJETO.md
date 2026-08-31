@@ -44,7 +44,7 @@ Fora de escopo inicial:
 - múltiplos usuários, equipes, papéis, permissões ou multi-tenancy;
 - planos, cobrança, assinatura, clientes ou afiliados;
 - API pública;
-- aplicativo mobile.
+- aplicativo mobile nativo. A aplicação web responsiva pode ser instalada como PWA, sem criar uma versão nativa separada.
 
 ## MVP funcional
 
@@ -55,9 +55,10 @@ O MVP cobre apenas:
 - mercado de resultado final **1X2**;
 - comparação da Firebets com as fontes configuradas;
 - dashboard simples e visual;
-- atualização manual por botão e/ou atualização automática em intervalos razoáveis;
+- atualização manual por botão; atualização automática é uma evolução posterior;
 - indicação da última atualização;
 - destaque visual para diferenças relevantes.
+- interface responsiva para dispositivos móveis e instalação opcional como PWA.
 
 Exemplo de comparação esperada:
 

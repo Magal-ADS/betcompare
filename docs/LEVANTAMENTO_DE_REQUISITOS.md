@@ -118,6 +118,7 @@ O sinal positivo significa que a Firebets paga mais; o negativo significa que pa
 | RNF-07 | Coleta responsável | Não burlar CAPTCHA, autenticação, anti-bot ou controles de acesso. |
 | RNF-08 | Usabilidade | O operador deve identificar divergências relevantes rapidamente, sem navegação complexa. |
 | RNF-09 | Evolutividade | Scheduler/Jobs e coletores novos devem poder ser adicionados sem reescrever o MVP. |
+| RNF-10 | Responsividade e instalação | A interface deve se adaptar a telas móveis. A aplicação web pode ser instalada como PWA em navegadores compatíveis, sem caracterizar a entrega de aplicativo nativo. |
 
 ## 5. Requisitos avançados ou pós-MVP
 
@@ -157,7 +158,7 @@ Os itens abaixo são possibilidades futuras. Eles não fazem parte da primeira i
 - IA para matching, precificação ou predição;
 - integrações financeiras, pagamentos e cobranças;
 - SaaS público, multi-tenancy, planos e assinaturas;
-- aplicativo mobile e API pública.
+- aplicativo mobile nativo e API pública. A aplicação web responsiva instalável como PWA integra a entrega atual.
 
 ## 6. Entidades de dados esperadas
 
