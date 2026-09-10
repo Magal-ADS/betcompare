@@ -28,7 +28,16 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-medium text-slate-200" for="password">Senha</label>
-                    <input class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none ring-cyan-400 focus:ring-2" id="password" name="password" type="password" autocomplete="current-password" required>
+                    <div class="relative">
+                        <input class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 pr-24 text-sm text-white outline-none ring-cyan-400 focus:ring-2" id="password" name="password" type="password" autocomplete="current-password" required>
+                        <button aria-controls="password" aria-label="Mostrar senha" aria-pressed="false" class="absolute inset-y-0 right-0 flex items-center gap-1 px-3 text-xs font-medium text-slate-300 hover:text-cyan-300 focus:outline-none focus-visible:text-cyan-300" data-password-visibility-toggle type="button">
+                            <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24">
+                                <path d="M2.25 12S5.75 5.25 12 5.25 21.75 12 21.75 12 18.25 18.75 12 18.75 2.25 12 2.25 12Z" />
+                                <circle cx="12" cy="12" r="2.75" />
+                            </svg>
+                            <span data-password-visibility-label>Mostrar</span>
+                        </button>
+                    </div>
                     @error('password')
                         <p class="mt-2 text-sm text-rose-300">{{ $message }}</p>
                     @enderror
@@ -40,5 +49,24 @@
                 <button class="w-full rounded-lg bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300" type="submit">Entrar</button>
             </form>
         </main>
+
+        <script>
+            const passwordInput = document.getElementById('password');
+            const passwordVisibilityToggle = document.querySelector('[data-password-visibility-toggle]');
+            const passwordVisibilityLabel = document.querySelector('[data-password-visibility-label]');
+
+            passwordVisibilityToggle?.addEventListener('click', () => {
+                if (passwordInput === null || passwordVisibilityLabel === null) {
+                    return;
+                }
+
+                const isPasswordVisible = passwordInput.type === 'password';
+
+                passwordInput.type = isPasswordVisible ? 'text' : 'password';
+                passwordVisibilityToggle.setAttribute('aria-pressed', String(isPasswordVisible));
+                passwordVisibilityToggle.setAttribute('aria-label', isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha');
+                passwordVisibilityLabel.textContent = isPasswordVisible ? 'Ocultar' : 'Mostrar';
+            });
+        </script>
     </body>
 </html>

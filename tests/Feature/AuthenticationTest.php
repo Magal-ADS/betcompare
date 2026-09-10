@@ -12,6 +12,14 @@ class AuthenticationTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    public function test_login_page_has_a_password_visibility_control(): void
+    {
+        $this->get(route('login'))
+            ->assertSeeHtml('data-password-visibility-toggle')
+            ->assertSeeHtml('aria-controls="password"')
+            ->assertSeeText('Mostrar');
+    }
+
     public function test_user_can_log_in_and_log_out(): void
     {
         $this->withoutMiddleware(PreventRequestForgery::class);
