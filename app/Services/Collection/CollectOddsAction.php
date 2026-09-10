@@ -48,7 +48,7 @@ final class CollectOddsAction
             $bookmaker = $this->bookmakerFor($collector->source());
 
             try {
-                $events = $collector->collect();
+                $events = $this->uniqueEvents($collector->collect());
                 $this->storeEvents($collectionRun, $bookmaker, $events);
 
                 CollectionSourceResult::create([
@@ -85,6 +85,25 @@ final class CollectOddsAction
         ]);
 
         return $collectionRun->refresh();
+    }
+
+    /**
+     * @param  Collection<int, CollectedOddsEvent>  $events
+     * @return Collection<int, CollectedOddsEvent>
+     */
+    private function uniqueEvents(Collection $events): Collection
+    {
+        return $events->unique(function (CollectedOddsEvent $collectedEvent): string {
+            $identity = $this->eventMatcher->sourceIdentity($collectedEvent);
+
+            return implode("\x1F", [
+                $collectedEvent->market,
+                $identity['normalized_home_team'],
+                $identity['normalized_away_team'],
+                $identity['event_date'] ?? '',
+                $identity['event_time'] ?? '',
+            ]);
+        })->values();
     }
 
     /**

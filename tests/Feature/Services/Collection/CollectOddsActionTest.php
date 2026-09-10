@@ -71,6 +71,28 @@ class CollectOddsActionTest extends TestCase
         ]);
     }
 
+    public function test_keeps_only_one_snapshot_when_a_source_returns_the_same_event_twice(): void
+    {
+        $this->mock(OddsCollectorRegistry::class, function ($mock): void {
+            $mock->shouldReceive('all')->once()->andReturn([
+                $this->collector('chute13', [
+                    $this->event('chute13', 'Flamengo RJ', 'Palmeiras SP', 1.90, 3.30, 4.00),
+                    $this->event('chute13', 'Flamengo', 'Palmeiras', 1.90, 3.30, 4.00),
+                ]),
+            ]);
+        });
+
+        $collectionRun = app(CollectOddsAction::class)->execute();
+
+        $this->assertSame('completed', $collectionRun->status);
+        $this->assertDatabaseHas('collection_source_results', [
+            'collection_run_id' => $collectionRun->id,
+            'status' => 'completed',
+            'events_count' => 1,
+        ]);
+        $this->assertDatabaseCount('odds', 1);
+    }
+
     /**
      * @param  array<int, CollectedOddsEvent>  $events
      */
