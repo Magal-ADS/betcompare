@@ -13,10 +13,11 @@ class FirebetsCollectorTest extends TestCase
     public function test_returns_normalized_1x2_events_from_public_firebets_html(): void
     {
         $this->freezeTime();
-        config()->set('services.bookmakers.firebets.games_url', 'https://firebets.test/games');
+        config()->set('services.bookmakers.firebets.games_url', 'https://firebets.test/simulador/jogos.aspx?idcampeonato=old');
         Http::preventStrayRequests();
         Http::fake([
-            'https://firebets.test/games' => Http::response($this->firebetsHtml()),
+            'https://firebets.test/simulador/jogos.aspx?idcampeonato=old' => Http::response($this->firebetsDailyMenuHtml()),
+            'https://firebets.test/simulador/jogos.aspx?idesporte=102&idcampeonato=today' => Http::response($this->firebetsHtml()),
         ]);
 
         $events = app(FirebetsCollector::class)->collect();
@@ -37,17 +38,22 @@ class FirebetsCollectorTest extends TestCase
         $this->assertSame(now()->toAtomString(), $event->collectedAt->toAtomString());
 
         Http::assertSent(function (Request $request): bool {
-            return $request->url() === 'https://firebets.test/games'
+            return $request->url() === 'https://firebets.test/simulador/jogos.aspx?idcampeonato=old'
                 && $request->method() === 'GET';
         });
+        Http::assertSent(function (Request $request): bool {
+            return $request->url() === 'https://firebets.test/simulador/jogos.aspx?idesporte=102&idcampeonato=today'
+                && $request->method() === 'GET';
+        });
+        Http::assertSentCount(2);
     }
 
     public function test_throws_when_the_firebets_page_cannot_be_collected(): void
     {
-        config()->set('services.bookmakers.firebets.games_url', 'https://firebets.test/games');
+        config()->set('services.bookmakers.firebets.games_url', 'https://firebets.test/simulador/jogos.aspx?idcampeonato=old');
         Http::preventStrayRequests();
         Http::fake([
-            'https://firebets.test/games' => Http::response('', 503),
+            'https://firebets.test/simulador/jogos.aspx?idcampeonato=old' => Http::response('', 503),
         ]);
 
         $exception = null;
@@ -61,6 +67,21 @@ class FirebetsCollectorTest extends TestCase
         $this->assertInstanceOf(RequestException::class, $exception);
 
         Http::assertSentCount(3);
+    }
+
+    private function firebetsDailyMenuHtml(): string
+    {
+        return <<<'HTML'
+<!doctype html>
+<div class="submenuItem">
+    <div class="submenuItem-main"><span class="name">Jogos do Dia</span></div>
+    <div class="submenuItem-level3">
+        <a href="jogos.aspx?idesporte=102&amp;idcampeonato=yesterday">Quarta-Feira</a>
+        <a href="jogos.aspx?idesporte=102&amp;idcampeonato=today">Quinta-Feira</a>
+        <a href="jogos.aspx?idesporte=102&amp;idcampeonato=tomorrow">Sexta-Feira</a>
+    </div>
+</div>
+HTML;
     }
 
     private function firebetsHtml(): string

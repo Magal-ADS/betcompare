@@ -21,17 +21,30 @@ abstract class PublicHtmlOddsCollector implements OddsCollector
 
     public function collect(): Collection
     {
-        $html = Http::accept('text/html')
+        return $this->collectHtml($this->fetchHtml($this->gamesUrl()));
+    }
+
+    protected function fetchHtml(string $url): string
+    {
+        return Http::accept('text/html')
             ->timeout(10)
             ->connectTimeout(3)
             ->retry([100, 500], when: function (\Throwable $exception): bool {
                 return $exception instanceof ConnectionException
                     || ($exception instanceof RequestException && $exception->response->serverError());
             })
-            ->get($this->config->string($this->gamesUrlConfigKey()))
+            ->get($url)
             ->throw()
             ->body();
+    }
 
+    protected function gamesUrl(): string
+    {
+        return $this->config->string($this->gamesUrlConfigKey());
+    }
+
+    protected function collectHtml(string $html): Collection
+    {
         $document = new DOMDocument;
         $previousInternalErrors = libxml_use_internal_errors(true);
 
