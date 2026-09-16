@@ -6,16 +6,21 @@ use Carbon\CarbonImmutable;
 
 final readonly class CollectedOddsEvent
 {
+    /**
+     * @param  array<string, CollectedMarket>  $markets
+     */
     public function __construct(
         public string $source,
-        public string $market,
         public string $homeTeam,
         public string $awayTeam,
         public ?string $eventDate,
         public ?string $eventTime,
-        public float $homeOdd,
-        public float $drawOdd,
-        public float $awayOdd,
+        public ?CarbonImmutable $startsAt,
+        public ?string $region,
+        public ?string $country,
+        public ?string $countryCode,
+        public ?string $competition,
+        public array $markets,
         public CarbonImmutable $collectedAt,
     ) {}
 }

@@ -53,3 +53,9 @@ Não há evidência atual que justifique adicionar Node.js/Python com Playwright
 - Nenhum HTML ou payload completo foi armazenado; foram registrados apenas os campos necessários para a avaliação técnica.
 - Os quatro coletores isolados, seu contrato de dados normalizados e testes foram criados. Eles mantêm regras de parsing independentes, embora compartilhem o parser HTML atual.
 - Falhas futuras de uma fonte devem ser registradas por fonte e não podem interromper a coleta ou a exibição das demais.
+
+## Revisão de 15/09/2026 — estrutura ampliada
+
+As páginas públicas de Chute13, A2Bets e GB Gold Bet continuavam usando a mesma estrutura geral de listagem e detalhes observada na Firebets. A implementação ampliada ainda preserva um coletor isolado por fonte, percorre somente os links públicos semanais disponíveis e filtra os detalhes pelo catálogo aprovado em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](IMPLEMENTACAO_ANALISES_E_FILTROS.md).
+
+A semelhança atual não é tratada como garantia permanente. Qualquer fonte pode substituir o parser comum por comportamento próprio se seu HTML mudar.

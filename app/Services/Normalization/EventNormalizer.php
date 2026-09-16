@@ -37,4 +37,20 @@ final class EventNormalizer
 
         return $normalized === '' ? null : $normalized;
     }
+
+    public function marketSelection(string $label): string
+    {
+        return $this->eventValue($label) ?? '';
+    }
+
+    /** @return array<int, string> */
+    public function searchTerms(string $search): array
+    {
+        return Str::of($this->eventValue($search) ?? '')
+            ->explode(' ')
+            ->reject(fn (string $term): bool => in_array($term, ['x', 'vs'], true))
+            ->unique()
+            ->values()
+            ->all();
+    }
 }

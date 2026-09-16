@@ -44,7 +44,7 @@
                                 <td class="px-4 py-4">{{ $run->status }}</td>
                                 <td class="px-4 py-4">
                                     @foreach ($run->sourceResults as $result)
-                                        <span class="mr-2 inline-block">{{ $result->bookmaker->name }}: {{ $result->status === 'completed' ? $result->events_count.' eventos' : ($result->status === 'empty' ? 'sem eventos' : 'falhou') }}</span>
+                                        <span class="mr-2 inline-block">{{ $result->bookmaker->name }}: {{ $result->displayStatusSummary() }}</span>
                                     @endforeach
                                 </td>
                             </tr>

@@ -46,9 +46,9 @@ Fora de escopo inicial:
 - API pública;
 - aplicativo mobile nativo. A aplicação web responsiva pode ser instalada como PWA, sem criar uma versão nativa separada.
 
-## MVP funcional
+## MVP funcional e expansão aprovada
 
-O MVP cobre apenas:
+O MVP original cobria:
 
 - futebol;
 - eventos disponíveis publicamente;
@@ -59,6 +59,8 @@ O MVP cobre apenas:
 - indicação da última atualização;
 - destaque visual para diferenças relevantes.
 - interface responsiva para dispositivos móveis e instalação opcional como PWA.
+
+Em 15/09/2026, o cliente aprovou a expansão para análises adicionais de gols, ambas marcam, chances duplas, tempos da partida, placares exatos, escanteios e jogadores, limitada à lista fechada documentada em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](IMPLEMENTACAO_ANALISES_E_FILTROS.md). A mesma aprovação incluiu jogos da semana, filtros por região/país/campeonato/jogo, correção da busca e percentuais individuais por casa.
 
 Exemplo de comparação esperada:
 
@@ -78,9 +80,9 @@ O painel deve permitir responder rapidamente:
 - Onde a Firebets está abaixo ou acima da concorrência?
 - Quando os dados foram coletados pela última vez?
 
-Fora de escopo do MVP:
+Continuam fora de escopo:
 
-- outros esportes e mercados além do 1X2;
+- outros esportes e mercados não incluídos na lista aprovada;
 - apostas ao vivo;
 - arbitragem, surebets ou previsões;
 - inteligência artificial para matching ou resultados;

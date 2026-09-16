@@ -1,11 +1,12 @@
-# Índice de Regras do Projeto
+# Project Rules Index
 
-Antes de planejar ou editar arquivos, leia `general.md` e todas as regras cujos caminhos cubram os arquivos em escopo. Pesquise também palavras-chave relevantes em `.ai/rules` para identificar decisões já registradas.
+Before planning or editing, find the row whose globs match the file's path and read that rule file.
 
-| Aplica-se a | Regra |
+| Applies to | Rule file |
 | --- | --- |
-| `**` | `.ai/rules/general.md` |
-| `app/Collectors/**`, `app/Services/Collection/**`, `app/Jobs/**` | `.ai/rules/collectors.md` |
-| `app/Models/**`, `database/migrations/**`, `app/Services/Normalization/**`, `app/Services/Comparison/**` | `.ai/rules/data-and-comparison.md` |
-| `app/Http/**`, `resources/views/**`, `routes/**` | `.ai/rules/dashboard.md` |
-| `tests/**` | `.ai/rules/testing.md` |
+| app/Collectors/**, app/Services/Collection/**, app/Jobs/** | .ai/rules/collectors.md |
+| app/{Http/Controllers,Jobs}/** | .ai/rules/controllers-jobs.md |
+| app/Http/**, resources/views/**, routes/** | .ai/rules/dashboard.md |
+| app/Models/**, database/migrations/**, app/Services/Normalization/**, app/Services/Comparison/** | .ai/rules/data-and-comparison.md |
+| ** | .ai/rules/general.md |
+| tests/** | .ai/rules/testing.md |

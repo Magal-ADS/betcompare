@@ -105,6 +105,20 @@ O sinal positivo significa que a Firebets paga mais; o negativo significa que pa
 | RF-24 | Disponibilizar atualização manual acionada pelo operador. | Obrigatório | O usuário pode solicitar nova coleta e recebe estado de processamento/sucesso/falha. |
 | RF-25 | Permitir filtrar ou organizar eventos para facilitar consulta. | Recomendado | Ao menos uma forma de ordenar/filtrar por data, time ou situação de comparação é definida antes da tela. |
 
+### 3.6 Expansão aprovada em 15/09/2026
+
+| ID | Requisito | Prioridade | Critério de aceite |
+| --- | --- | --- | --- |
+| RF-26 | Coletar somente os mercados adicionais aprovados pelo cliente. | Obrigatório | Títulos fora do catálogo fechado são descartados e não persistidos. |
+| RF-27 | Exibir as análises sem multiplicar blocos abertos no cartão do jogo. | Obrigatório | Um seletor no cabeçalho alterna localmente o único mercado visível. |
+| RF-28 | Trabalhar somente com os jogos da semana corrente. | Obrigatório | O painel restringe os resultados à segunda-feira até domingo e não oferece filtro de dia, mês ou ano. |
+| RF-29 | Filtrar jogos por região, país, campeonato e jogo. | Obrigatório | Todos os níveis são opcionais; campeonato restringe as partidas semanais disponíveis no seletor de jogo. |
+| RF-30 | Corrigir a pesquisa de jogos existentes. | Obrigatório | A busca encontra nomes sem depender de acentos, maiúsculas, paginação ou do separador `x`/`vs`. |
+| RF-31 | Manter as ordenações de maior e menor diferença. | Obrigatório | As duas opções permanecem disponíveis no formulário de filtros. |
+| RF-32 | Exibir a comparação percentual individual por casa. | Obrigatório | Cada odd concorrente válida apresenta a diferença percentual da Firebets para aquela casa. |
+
+A relação exata de mercados e as equivalências com os títulos das fontes estão em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](IMPLEMENTACAO_ANALISES_E_FILTROS.md). Esse catálogo é a fonte de verdade para impedir coleta de itens além dos aprovados.
+
 ## 4. Requisitos não funcionais — MVP
 
 | ID | Requisito | Critério/objetivo |
@@ -146,7 +160,7 @@ Os itens abaixo são possibilidades futuras. Eles não fazem parte da primeira i
 ### 5.3 Ampliações de cobertura
 
 - outros esportes;
-- mercados adicionais (handicap, total de gols, ambas marcam etc.);
+- mercados adicionais que não façam parte do catálogo aprovado em 15/09/2026;
 - eventos ao vivo;
 - novas casas/fontes;
 - automação de navegador por serviço auxiliar, se confirmada necessária na prova técnica.
@@ -211,7 +225,7 @@ Estas perguntas devem ser resolvidas durante a prova técnica e o detalhamento d
 
 ## 9. Critério de conclusão do MVP
 
-O MVP estará funcional quando o único operador puder abrir um painel privado, acionar uma atualização manual, ver o estado das quatro fontes e comparar as odds 1X2 de futebol da Firebets com as concorrentes para eventos reconhecidos como equivalentes. O painel deve exibir as odds individuais por fonte, a melhor referência concorrente válida, horários de atualização e indicação clara das diferenças.
+O produto estará funcional quando o único operador puder abrir um painel privado, acionar uma atualização manual, ver o estado das quatro fontes e comparar as odds dos mercados aprovados da Firebets com as concorrentes para eventos reconhecidos como equivalentes. O painel deve exibir as odds individuais por fonte, percentuais individuais, a melhor referência concorrente válida, horários de atualização e indicação clara das diferenças.
 
 O dashboard deve continuar funcional quando uma ou mais fontes falharem ou estiverem sem dados. Nesse caso, deve apresentar as fontes disponíveis e identificar separadamente, por fonte, o status de erro ou indisponibilidade; uma falha isolada não pode interromper a comparação nem derrubar o painel inteiro.
 

@@ -19,7 +19,19 @@ class SourceEvent extends Model
         'normalized_away_team',
         'event_date',
         'event_time',
+        'starts_at',
+        'region',
+        'country',
+        'country_code',
+        'competition',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'starts_at' => 'datetime',
+        ];
+    }
 
     public function bookmaker(): BelongsTo
     {
@@ -34,5 +46,10 @@ class SourceEvent extends Model
     public function odds(): HasMany
     {
         return $this->hasMany(Odd::class);
+    }
+
+    public function marketOdds(): HasMany
+    {
+        return $this->hasMany(MarketOdd::class);
     }
 }

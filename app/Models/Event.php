@@ -16,7 +16,19 @@ class Event extends Model
         'normalized_away_team',
         'event_date',
         'event_time',
+        'starts_at',
+        'region',
+        'country',
+        'country_code',
+        'competition',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'starts_at' => 'datetime',
+        ];
+    }
 
     public function sourceEvents(): HasMany
     {

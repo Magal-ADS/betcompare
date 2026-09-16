@@ -23,8 +23,11 @@ class DashboardFilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'team' => ['nullable', 'string', 'max:100'],
-            'date' => ['nullable', 'date_format:Y-m-d'],
+            'search' => ['nullable', 'string', 'max:150'],
+            'region' => ['nullable', 'string', Rule::in(['america', 'asia', 'europe'])],
+            'country' => ['nullable', 'string', 'max:100'],
+            'competition' => ['nullable', 'string', 'max:150'],
+            'game' => ['nullable', 'integer', Rule::exists('events', 'id')],
             'sort' => ['nullable', 'string', Rule::in(['time', 'difference_desc', 'difference_asc', 'team'])],
         ];
     }

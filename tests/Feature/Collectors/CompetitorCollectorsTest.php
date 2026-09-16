@@ -32,12 +32,11 @@ class CompetitorCollectorsTest extends TestCase
         $event = app($collectorClass)->collect()->sole();
 
         $this->assertSame($source, $event->source);
-        $this->assertSame('1x2', $event->market);
         $this->assertSame('CR Vasco da Gama RJ', $event->homeTeam);
         $this->assertSame('EC Vitória BA', $event->awayTeam);
-        $this->assertSame(1.55, $event->homeOdd);
-        $this->assertSame(3.37, $event->drawOdd);
-        $this->assertSame(5.1, $event->awayOdd);
+        $this->assertSame(1.55, $event->markets['match_winner']->selections[0]['odd']);
+        $this->assertSame(3.37, $event->markets['match_winner']->selections[1]['odd']);
+        $this->assertSame(5.1, $event->markets['match_winner']->selections[2]['odd']);
 
         Http::assertSent(fn (Request $request): bool => $request->url() === $url && $request->method() === 'GET');
     }

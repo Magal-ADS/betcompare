@@ -1,14 +1,16 @@
 # OddRadar — Implementação atual do MVP
 
-**Atualizado em:** 31/08/2026
+**Atualizado em:** 15/09/2026
 
-**Status:** MVP funcional em ambiente local
+**Status:** MVP funcional com expansão de análises e filtros semanais
 
 Este documento descreve o que está efetivamente implementado. Para o objetivo, limites e decisões de produto, consulte também [CONTEXTO_DO_PROJETO.md](CONTEXTO_DO_PROJETO.md) e [LEVANTAMENTO_DE_REQUISITOS.md](LEVANTAMENTO_DE_REQUISITOS.md).
 
+A expansão aprovada após o MVP está detalhada em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](IMPLEMENTACAO_ANALISES_E_FILTROS.md). Em caso de divergência sobre mercados, filtros, semana ou percentuais individuais, esse documento mais recente prevalece.
+
 ## 1. Entrega atual
 
-O MVP implementa o fluxo abaixo para futebol pré-jogo no mercado de resultado final 1X2:
+O sistema implementa o fluxo abaixo para futebol pré-jogo nos mercados aprovados:
 
 ```text
 Atualização manual
@@ -45,7 +47,8 @@ O sistema continua sendo uma ferramenta interna de monitoramento. Ele não execu
 | `CollectOddsAction` | Cria uma execução de coleta, isola falhas por fonte e persiste resultados disponíveis. |
 | `EventNormalizer` | Normaliza nomes de equipes, removendo acentos, caracteres especiais e sufixos redundantes comuns. |
 | `EventMatcher` | Associa eventos somente quando mandante, visitante, mercado, data e horário normalizados coincidem. |
-| `OddsComparisonService` | Mantém as odds individuais e calcula a maior odd concorrente e a diferença da Firebets. |
+| `MarketCatalog` | Mantém a lista fechada de mercados autorizados e descarta títulos não aprovados. |
+| `OddsComparisonService` | Mantém as odds individuais, calcula a diferença por casa e a maior referência concorrente. |
 | `DashboardController` / `RefreshOddsController` | Exibem o painel e recebem o pedido manual de atualização. |
 | `AuthenticatedSessionController` | Autentica sessões internas com as contas do Laravel. |
 | `UserManagementController` | Permite ao super administrador cadastrar e alterar contas operadoras. |
@@ -67,10 +70,10 @@ Cada coletor retorna objetos `CollectedOddsEvent` com:
 
 ```text
 fonte
-mercado (1x2)
 mandante e visitante
 data e horário exibidos pela fonte, quando disponíveis
-odd do mandante, empate e visitante
+região, país e campeonato, quando identificáveis
+mercados aprovados, seleções e odds disponíveis
 horário da coleta
 ```
 
@@ -87,7 +90,8 @@ As migrations do MVP criam as tabelas abaixo.
 | `collection_source_results` | Resultado individual de cada fonte: status (`completed`, `empty` ou `failed`), horário, quantidade de eventos e erro resumido quando aplicável. |
 | `events` | Evento padronizado, com equipes originais da primeira ocorrência e chaves normalizadas. |
 | `source_events` | Representação de um evento tal como foi recebido por uma fonte; pode apontar para um evento padronizado. |
-| `odds` | Snapshot 1X2 vinculado a um evento de origem e a uma execução de coleta. |
+| `odds` | Snapshot 1X2 legado, mantido para compatibilidade histórica. |
+| `market_odds` | Snapshot genérico por mercado e seleção, vinculado ao evento de origem e à execução. |
 
 O MVP armazena dados estruturados e mensagens resumidas de erro. Não armazena HTML completo nem payloads extensos por padrão.
 
@@ -104,12 +108,13 @@ Quando não há correspondência segura, o evento continua no banco e aparece no
 
 ## 7. Regra de comparação
 
-Para cada seleção do 1X2, o painel mostra:
+Para cada seleção de um mercado aprovado, o painel mostra:
 
 - odd individual de Firebets, Chute13, A2Bets e GB Gold Bet, quando disponível;
 - a maior odd concorrente válida;
 - a casa que oferece essa referência;
 - diferença percentual da Firebets para a referência;
+- diferença percentual da Firebets para cada casa concorrente;
 - estado textual: `↑ Acima`, `↓ Abaixo` ou `= Igual`.
 
 Fórmula aplicada:
@@ -164,7 +169,9 @@ Depois de alterar configuração em ambiente já em execução, execute `php art
 
 ## 10.1 Melhorias operacionais implementadas
 
-- Filtro por equipe e data exibida pela fonte, com ordenação por horário, equipe ou maior/menor diferença.
+- Funil por região, país, campeonato e jogo, busca normalizada e ordenação por horário, equipe ou maior/menor diferença.
+- Recorte automático da semana corrente; não há filtro de dia, mês ou ano.
+- Seletor compacto de análise no cabeçalho de cada jogo, exibindo um mercado por vez.
 - Feedback visual no botão durante a atualização manual.
 - Histórico paginado de coletas e falhas por fonte.
 - Tela de login com sessão segura do Laravel. Todo o painel exige autenticação.
@@ -266,5 +273,5 @@ O seeder só cria o super administrador caso o e-mail ainda não exista; por iss
 
 - O botão de atualização executa a coleta de forma síncrona. Scheduler, filas e alertas são evoluções posteriores, não requisitos desta entrega.
 - A estabilidade do HTML das fontes deve ser monitorada; mudança de markup exige ajuste no coletor correspondente.
-- Não foram adicionados outros esportes, outros mercados, odds ao vivo, filtros avançados, exportação, API pública, IA, surebets ou execução de apostas.
+- Não foram adicionados outros esportes, mercados fora do catálogo aprovado, odds ao vivo, exportação, API pública, IA, surebets ou execução de apostas.
 - A PWA é uma versão instalável da aplicação web; não há aplicativo nativo Android ou iOS. Em navegadores compatíveis, a instalação é oferecida pelo botão ou pelo menu do navegador; no Safari/iOS, use “Adicionar à Tela de Início”.

@@ -70,3 +70,9 @@ Não adicionar Playwright/Puppeteer para a Firebets neste momento: não há evid
 - Não armazenar HTML integral ou payloads extensos no MVP. O resultado futuro da coleta deve registrar somente fonte, evento, mercado, odds, horário, status e erro quando aplicável.
 - Antes de implementar o dashboard completo, executar a mesma prova técnica para Chute13, A2Bets e GB Gold Bet.
 - A implementação futura deve respeitar limites razoáveis de acesso e registrar falha isolada por fonte, sem impedir a visualização das fontes disponíveis.
+
+## Revisão de 15/09/2026 — mercados e semana
+
+Uma nova inspeção passiva confirmou que o menu público “Jogos do Dia” expõe links das datas disponíveis na semana e que cada cartão aponta para uma página pública de detalhes em `Apostas.aspx`. Nessa página, os mercados aparecem em `.eventdetail-market`, com o título no cabeçalho e cada seleção/odd em `.eventdetail-optionItem`.
+
+Também foram confirmados nos eventos que os oferecem os mercados solicitados de gols, ambas marcam, chances duplas, tempos, placares exatos, escanteios e jogadores. A relação fechada efetivamente coletada está em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](IMPLEMENTACAO_ANALISES_E_FILTROS.md); mercados presentes na página, mas ausentes dessa relação, são descartados.

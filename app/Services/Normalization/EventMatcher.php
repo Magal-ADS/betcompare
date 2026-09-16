@@ -4,6 +4,8 @@ namespace App\Services\Normalization;
 
 use App\Collectors\CollectedOddsEvent;
 use App\Models\Event;
+use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 
 final class EventMatcher
 {
@@ -15,24 +17,49 @@ final class EventMatcher
     {
         $attributes = [
             'sport' => self::SPORT,
-            'market' => $collectedEvent->market,
             'normalized_home_team' => $this->normalizer->team($collectedEvent->homeTeam),
             'normalized_away_team' => $this->normalizer->team($collectedEvent->awayTeam),
-            'event_date' => $this->normalizer->eventValue($collectedEvent->eventDate),
-            'event_time' => $this->normalizer->eventValue($collectedEvent->eventTime),
         ];
+        $event = Event::query()
+            ->where($attributes)
+            ->when(
+                $collectedEvent->startsAt,
+                fn (Builder $query): Builder => $query->where('starts_at', $collectedEvent->startsAt),
+                fn (Builder $query): Builder => $query
+                    ->whereNull('starts_at')
+                    ->where('event_date', $this->normalizer->eventValue($collectedEvent->eventDate))
+                    ->where('event_time', $this->normalizer->eventValue($collectedEvent->eventTime)),
+            )
+            ->first();
 
-        $event = Event::query()->where($attributes)->first();
+        if ($event !== null) {
+            $event->fill([
+                'region' => $event->region ?? $collectedEvent->region,
+                'country' => $event->country ?? $collectedEvent->country,
+                'country_code' => $event->country_code ?? $collectedEvent->countryCode,
+                'competition' => $event->competition ?? $collectedEvent->competition,
+            ])->save();
 
-        return $event ?? Event::create([
+            return $event;
+        }
+
+        return Event::create([
             ...$attributes,
+            'market' => 'pregame',
             'home_team' => $collectedEvent->homeTeam,
             'away_team' => $collectedEvent->awayTeam,
+            'event_date' => $this->normalizer->eventValue($collectedEvent->eventDate),
+            'event_time' => $this->normalizer->eventValue($collectedEvent->eventTime),
+            'starts_at' => $collectedEvent->startsAt,
+            'region' => $collectedEvent->region,
+            'country' => $collectedEvent->country,
+            'country_code' => $collectedEvent->countryCode,
+            'competition' => $collectedEvent->competition,
         ]);
     }
 
     /**
-     * @return array{normalized_home_team: string, normalized_away_team: string, event_date: string|null, event_time: string|null}
+     * @return array{normalized_home_team: string, normalized_away_team: string, event_date: string|null, event_time: string|null, starts_at: CarbonImmutable|null}
      */
     public function sourceIdentity(CollectedOddsEvent $collectedEvent): array
     {
@@ -41,6 +68,7 @@ final class EventMatcher
             'normalized_away_team' => $this->normalizer->team($collectedEvent->awayTeam),
             'event_date' => $this->normalizer->eventValue($collectedEvent->eventDate),
             'event_time' => $this->normalizer->eventValue($collectedEvent->eventTime),
+            'starts_at' => $collectedEvent->startsAt,
         ];
     }
 }
