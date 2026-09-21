@@ -60,7 +60,7 @@ O MVP original cobria:
 - destaque visual para diferenças relevantes.
 - interface responsiva para dispositivos móveis e instalação opcional como PWA.
 
-Em 15/09/2026, o cliente aprovou a expansão para análises adicionais de gols, ambas marcam, chances duplas, tempos da partida, placares exatos, escanteios e jogadores, limitada à lista fechada documentada em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](IMPLEMENTACAO_ANALISES_E_FILTROS.md). A mesma aprovação incluiu jogos da semana, filtros por região/país/campeonato/jogo, correção da busca e percentuais individuais por casa.
+Em 15/09/2026, o cliente aprovou a expansão para análises adicionais de gols, ambas marcam, chances duplas, tempos da partida, placares exatos, escanteios e jogadores, limitada à lista fechada documentada em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](../implementacao/IMPLEMENTACAO_ANALISES_E_FILTROS.md). A mesma aprovação incluiu jogos da semana, filtros por região/país/campeonato/jogo, correção da busca e percentuais individuais por casa.
 
 Exemplo de comparação esperada:
 
@@ -241,4 +241,4 @@ Prioridades:
 5. dashboard;
 6. atualização dos dados.
 
-O MVP descrito neste documento está implementado. Consulte [IMPLEMENTACAO_MVP.md](IMPLEMENTACAO_MVP.md) para o estado técnico atual e suas limitações operacionais.
+O MVP descrito neste documento está implementado. Consulte [IMPLEMENTACAO_MVP.md](../implementacao/IMPLEMENTACAO_MVP.md) para o estado técnico atual e suas limitações operacionais.

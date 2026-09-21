@@ -3,7 +3,7 @@
 **Data da implementação:** 15/09/2026
 **Status:** implementado e coberto por testes automatizados
 
-Este documento registra a expansão aprovada após a reunião com o cliente. Ele complementa [CONTEXTO_DO_PROJETO.md](CONTEXTO_DO_PROJETO.md), [LEVANTAMENTO_DE_REQUISITOS.md](LEVANTAMENTO_DE_REQUISITOS.md) e [IMPLEMENTACAO_MVP.md](IMPLEMENTACAO_MVP.md).
+Este documento registra a expansão aprovada após a reunião com o cliente. Ele complementa [CONTEXTO_DO_PROJETO.md](../produto/CONTEXTO_DO_PROJETO.md), [LEVANTAMENTO_DE_REQUISITOS.md](../produto/LEVANTAMENTO_DE_REQUISITOS.md) e [IMPLEMENTACAO_MVP.md](IMPLEMENTACAO_MVP.md).
 
 ## 1. Resultado entregue
 
@@ -90,10 +90,10 @@ Para cada fonte, o coletor:
 
 Os cabeçalhos promocionais `Chutes ao Gol` e `Defesas de Goleiro` são descartados antes da leitura dos cartões. Essa validação é feita pelo título do grupo, e não pela presença de nomes entre parênteses, para não excluir equipes ou campeonatos legítimos.
 
-As páginas de detalhes são consultadas concorrentemente, com limite padrão de quatro requisições por fonte. O limite pode ser reduzido por ambiente:
+As páginas de detalhes são consultadas concorrentemente, com limite padrão atual de duas requisições por fonte. O limite pode ser ajustado por ambiente:
 
 ```dotenv
-ODDRADAR_COLLECTION_DETAIL_CONCURRENCY=4
+ODDRADAR_COLLECTION_DETAIL_CONCURRENCY=2
 ODDRADAR_COLLECTION_COOLDOWN_MINUTES=30
 ```
 
@@ -112,7 +112,7 @@ O fim do cooldown interno somente libera uma nova tentativa; ele não garante qu
 
 Os cartões de “Status das fontes” representam o resultado da última coleta concluída. Portanto, uma fonte permanece marcada como “Falhou — Limite temporário da fonte atingido” até que uma coleta posterior dessa mesma fonte termine com sucesso. O aviso de cooldown exibido acima do painel se refere ao clique atual e não substitui o resultado histórico mostrado nos cartões.
 
-O clique em “Atualizar odds agora” apenas agenda uma tarefa única na fila e devolve o controle do navegador imediatamente. Um worker executa a coleta em segundo plano. A combinação de marcador atômico no cache e job único impede cliques repetidos de enfileirarem coletas simultâneas. O job possui uma tentativa, timeout de 900 segundos e `retry_after` de 960 segundos; assim, uma coleta lenta não é duplicada pelo worker e uma falha externa não dispara novas tentativas contra a fonte.
+O clique em “Atualizar odds agora” apenas agenda uma tarefa única na fila e devolve o controle do navegador imediatamente. O painel informa que a coleta pode levar até 15 minutos. Um worker executa a coleta em segundo plano. A combinação de marcador atômico no cache e job único impede cliques repetidos de enfileirarem coletas simultâneas. O job possui uma tentativa, timeout de 900 segundos e `retry_after` de 960 segundos; assim, uma coleta lenta não é duplicada pelo worker e uma falha externa não dispara novas tentativas contra a fonte. O procedimento operacional completo está em [OPERACAO_LOCAL.md](../operacao/OPERACAO_LOCAL.md).
 
 ## 5. Dados e migrations
 

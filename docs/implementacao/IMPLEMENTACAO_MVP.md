@@ -1,12 +1,14 @@
 # OddRadar — Implementação atual do MVP
 
-**Atualizado em:** 15/09/2026
+**Atualizado em:** 21/09/2026
 
 **Status:** MVP funcional com expansão de análises e filtros semanais
 
-Este documento descreve o que está efetivamente implementado. Para o objetivo, limites e decisões de produto, consulte também [CONTEXTO_DO_PROJETO.md](CONTEXTO_DO_PROJETO.md) e [LEVANTAMENTO_DE_REQUISITOS.md](LEVANTAMENTO_DE_REQUISITOS.md).
+Este documento descreve o que está efetivamente implementado. Para o objetivo, limites e decisões de produto, consulte também [CONTEXTO_DO_PROJETO.md](../produto/CONTEXTO_DO_PROJETO.md) e [LEVANTAMENTO_DE_REQUISITOS.md](../produto/LEVANTAMENTO_DE_REQUISITOS.md).
 
 A expansão aprovada após o MVP está detalhada em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](IMPLEMENTACAO_ANALISES_E_FILTROS.md). Em caso de divergência sobre mercados, filtros, semana ou percentuais individuais, esse documento mais recente prevalece.
+
+Para inicialização, autenticação, coleta, recuperação e execução segura dos testes no ambiente local, consulte [OPERACAO_LOCAL.md](../operacao/OPERACAO_LOCAL.md).
 
 ## 1. Entrega atual
 
@@ -59,8 +61,8 @@ Os coletores fazem apenas `GET` para páginas públicas configuradas, com timeou
 
 Não há uso de login, CAPTCHA, endpoint privado, contorno de anti-bot, WebSocket ou automação de navegador. O método atual foi validado pelas provas técnicas registradas em:
 
-- [PROVA_TECNICA_FIREBETS.md](PROVA_TECNICA_FIREBETS.md)
-- [PROVAS_TECNICAS_CONCORRENTES.md](PROVAS_TECNICAS_CONCORRENTES.md)
+- [PROVA_TECNICA_FIREBETS.md](../provas-tecnicas/PROVA_TECNICA_FIREBETS.md)
+- [PROVAS_TECNICAS_CONCORRENTES.md](../provas-tecnicas/PROVAS_TECNICAS_CONCORRENTES.md)
 
 Se uma fonte alterar o HTML ou deixar de disponibilizar os dados publicamente, a correção deve ocorrer no coletor daquela fonte. Não tentar burlar proteções.
 
@@ -130,6 +132,8 @@ Dados ausentes nunca são tratados como odd zero.
 ## 8. Atualização manual e disponibilidade parcial
 
 No dashboard, o botão **“Atualizar odds agora”** envia `POST /atualizar-odds`.
+
+A requisição agenda um job único e retorna imediatamente ao dashboard. Um worker executa a coleta em segundo plano, com timeout de 15 minutos. A mensagem de confirmação informa esse prazo ao operador, que pode continuar usando ou fechar o painel durante o processamento.
 
 Para cada fonte:
 
@@ -233,6 +237,8 @@ docker compose exec -T app vendor/bin/pint
 
 O serviço `test` força SQLite em memória. Assim, a suíte não usa nem altera o banco PostgreSQL local.
 
+Não execute testes de banco com `docker compose exec app php artisan test`: o serviço `app` usa o PostgreSQL local e testes com recriação de banco podem apagar os dados de desenvolvimento. Consulte o procedimento completo em [OPERACAO_LOCAL.md](../operacao/OPERACAO_LOCAL.md).
+
 ## 14. Publicação com Dockploy
 
 O `Dockerfile` prepara os assets do Vite durante a imagem e expõe a porta interna `8000`; no Dockploy, publique esse container através de um domínio com HTTPS. HTTPS é necessário em produção para o `service worker` e a instalação como PWA; `localhost` é a exceção aceita pelos navegadores durante o desenvolvimento. Não é necessário expor a porta `8010`, que existe apenas no `docker-compose.yml` local.
@@ -271,7 +277,7 @@ O seeder só cria o super administrador caso o e-mail ainda não exista; por iss
 
 ## 15. Limitações e próximos cuidados
 
-- O botão de atualização executa a coleta de forma síncrona. Scheduler, filas e alertas são evoluções posteriores, não requisitos desta entrega.
+- O botão de atualização agenda a coleta em uma fila e retorna imediatamente. O serviço `worker` é obrigatório; sem ele, as atualizações permanecem pendentes.
 - A estabilidade do HTML das fontes deve ser monitorada; mudança de markup exige ajuste no coletor correspondente.
 - Não foram adicionados outros esportes, mercados fora do catálogo aprovado, odds ao vivo, exportação, API pública, IA, surebets ou execução de apostas.
 - A PWA é uma versão instalável da aplicação web; não há aplicativo nativo Android ou iOS. Em navegadores compatíveis, a instalação é oferecida pelo botão ou pelo menu do navegador; no Safari/iOS, use “Adicionar à Tela de Início”.

@@ -41,7 +41,7 @@ class RefreshOddsTest extends TestCase
             ->actingAs(User::factory()->create())
             ->post(route('odds.refresh'))
             ->assertRedirect(route('dashboard'))
-            ->assertSessionHas('status', 'Atualização iniciada em segundo plano. Você pode continuar usando o painel enquanto as odds são coletadas.');
+            ->assertSessionHas('status', 'Atualização iniciada em segundo plano. A coleta pode levar até 15 minutos. Você pode continuar usando o painel enquanto as odds são coletadas.');
 
         Queue::assertPushed(CollectOdds::class, 1);
         $this->assertDatabaseCount('collection_runs', 0);

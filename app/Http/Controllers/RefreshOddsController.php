@@ -31,6 +31,6 @@ final class RefreshOddsController extends Controller
 
         CollectOdds::dispatch();
 
-        return to_route('dashboard')->with('status', 'Atualização iniciada em segundo plano. Você pode continuar usando o painel enquanto as odds são coletadas.');
+        return to_route('dashboard')->with('status', 'Atualização iniciada em segundo plano. A coleta pode levar até 15 minutos. Você pode continuar usando o painel enquanto as odds são coletadas.');
     }
 }

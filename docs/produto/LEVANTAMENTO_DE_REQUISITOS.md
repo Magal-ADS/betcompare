@@ -117,7 +117,7 @@ O sinal positivo significa que a Firebets paga mais; o negativo significa que pa
 | RF-31 | Manter as ordenações de maior e menor diferença. | Obrigatório | As duas opções permanecem disponíveis no formulário de filtros. |
 | RF-32 | Exibir a comparação percentual individual por casa. | Obrigatório | Cada odd concorrente válida apresenta a diferença percentual da Firebets para aquela casa. |
 
-A relação exata de mercados e as equivalências com os títulos das fontes estão em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](IMPLEMENTACAO_ANALISES_E_FILTROS.md). Esse catálogo é a fonte de verdade para impedir coleta de itens além dos aprovados.
+A relação exata de mercados e as equivalências com os títulos das fontes estão em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](../implementacao/IMPLEMENTACAO_ANALISES_E_FILTROS.md). Esse catálogo é a fonte de verdade para impedir coleta de itens além dos aprovados.
 
 ## 4. Requisitos não funcionais — MVP
 

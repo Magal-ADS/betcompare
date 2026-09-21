@@ -75,4 +75,4 @@ Não adicionar Playwright/Puppeteer para a Firebets neste momento: não há evid
 
 Uma nova inspeção passiva confirmou que o menu público “Jogos do Dia” expõe links das datas disponíveis na semana e que cada cartão aponta para uma página pública de detalhes em `Apostas.aspx`. Nessa página, os mercados aparecem em `.eventdetail-market`, com o título no cabeçalho e cada seleção/odd em `.eventdetail-optionItem`.
 
-Também foram confirmados nos eventos que os oferecem os mercados solicitados de gols, ambas marcam, chances duplas, tempos, placares exatos, escanteios e jogadores. A relação fechada efetivamente coletada está em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](IMPLEMENTACAO_ANALISES_E_FILTROS.md); mercados presentes na página, mas ausentes dessa relação, são descartados.
+Também foram confirmados nos eventos que os oferecem os mercados solicitados de gols, ambas marcam, chances duplas, tempos, placares exatos, escanteios e jogadores. A relação fechada efetivamente coletada está em [IMPLEMENTACAO_ANALISES_E_FILTROS.md](../implementacao/IMPLEMENTACAO_ANALISES_E_FILTROS.md); mercados presentes na página, mas ausentes dessa relação, são descartados.

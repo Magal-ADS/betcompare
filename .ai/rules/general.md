@@ -7,7 +7,7 @@ paths:
 
 ## Escopo do produto
 
-Considere `docs/CONTEXTO_DO_PROJETO.md` e `docs/LEVANTAMENTO_DE_REQUISITOS.md` como fontes de verdade do produto. Antes de implementar, confirme que o pedido pertence ao MVP ou que o usuário aprovou expressamente a expansão de escopo.
+Considere `docs/produto/CONTEXTO_DO_PROJETO.md` e `docs/produto/LEVANTAMENTO_DE_REQUISITOS.md` como fontes de verdade do produto. Antes de implementar, confirme que o pedido pertence ao MVP ou que o usuário aprovou expressamente a expansão de escopo.
 
 O OddRadar é uma ferramenta interna de comparação de odds para a Firebets. Não implemente apostas, execução de apostas, pagamentos, SaaS, multi-tenancy, IA preditiva, arbitragem, surebets ou integração financeira sem autorização explícita.
 
