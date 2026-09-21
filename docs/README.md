@@ -22,6 +22,7 @@ Estado técnico e decisões já implementadas:
 Procedimentos para executar, recuperar e diagnosticar o ambiente:
 
 - [Operação local atual](operacao/OPERACAO_LOCAL.md)
+- [Pendências do sistema em 21/09/2026](operacao/PENDENCIAS_DO_SISTEMA_2026-09-21.md)
 
 ## Provas técnicas
 
