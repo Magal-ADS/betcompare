@@ -18,6 +18,13 @@ class InternalAccessTest extends TestCase
         $this->get('/')->assertRedirect(route('login'));
     }
 
+    public function test_dashboard_redirect_keeps_https_behind_a_trusted_proxy(): void
+    {
+        $this->withHeaders(['X-Forwarded-Proto' => 'https'])
+            ->get('http://oddradar.test/')
+            ->assertRedirect('https://oddradar.test/login');
+    }
+
     public function test_authenticated_operator_can_access_the_dashboard(): void
     {
         $this->actingAs(User::factory()->create())
