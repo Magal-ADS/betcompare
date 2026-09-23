@@ -275,6 +275,13 @@ php artisan config:cache
 
 O seeder só cria o super administrador caso o e-mail ainda não exista; por isso, reexecutá-lo não redefine a senha de uma conta já criada. Após o primeiro deploy, mantenha as variáveis de administrador como segredos do Dockploy e nunca as coloque no Git.
 
+Em produção, a fila roda no serviço Docker Swarm separado `oddradar-worker`, usando a mesma imagem e as mesmas variáveis da aplicação. Depois de cada deploy do app no Dokploy, atualize a imagem do worker e confirme que a nova tarefa está `Running` antes de usar o botão de coleta. Executar apenas `queue:restart` não substitui a imagem de um serviço separado. Mantenha uma réplica do worker, `--tries=1`, `--timeout=900` e `DB_QUEUE_RETRY_AFTER=960`.
+
+```bash
+docker service update --force --image oddradar-app-xmcf8x:latest oddradar-worker
+docker service ps oddradar-worker
+```
+
 ## 15. Limitações e próximos cuidados
 
 - O botão de atualização agenda a coleta em uma fila e retorna imediatamente. O serviço `worker` é obrigatório; sem ele, as atualizações permanecem pendentes.

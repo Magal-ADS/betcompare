@@ -29,3 +29,6 @@ Persist HTTP 429/Cloudflare 1015 as rate_limited with http_status and retry_at. 
 
 ## Persist match start times in UTC
 Public match cards show time in app.display_timezone. Convert the parsed Carbon start time to UTC before Eloquent persists it; timestamp columns omit timezone, so passing a local-time Carbon stores the wrong wall time. Keep source text separately and verify collection through database display.
+
+## Update production worker with each Dokploy deploy
+Production uses a separate Docker Swarm service named oddradar-worker, built from the oddradar-app-xmcf8x image with the app environment and database queue. After each Dokploy app deploy, update this worker to the new image and verify its task is running; queue:restart alone does not replace the service image.
