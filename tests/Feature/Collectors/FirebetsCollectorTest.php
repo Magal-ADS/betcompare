@@ -3,6 +3,11 @@
 namespace Tests\Feature\Collectors;
 
 use App\Collectors\FirebetsCollector;
+use App\Collectors\OddsCollectorRegistry;
+use App\Collectors\PartialCollectionRateLimited;
+use App\Services\Collection\CollectOddsAction;
+use Carbon\CarbonImmutable;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
@@ -10,9 +15,11 @@ use Tests\TestCase;
 
 class FirebetsCollectorTest extends TestCase
 {
+    use LazilyRefreshDatabase;
+
     public function test_returns_only_approved_markets_and_location_from_public_firebets_html(): void
     {
-        $this->freezeTime();
+        $this->travelTo(CarbonImmutable::parse('2026-08-26 16:26:00', 'UTC'));
         config()->set('services.bookmakers.firebets.games_url', 'https://firebets.test/simulador/jogos.aspx?idcampeonato=old');
         Http::preventStrayRequests();
         Http::fake([
@@ -32,6 +39,8 @@ class FirebetsCollectorTest extends TestCase
         $this->assertSame('Palmeiras SP', $event->awayTeam);
         $this->assertSame('26/ago', $event->eventDate);
         $this->assertSame('21:30', $event->eventTime);
+        $this->assertSame('2026-08-27 00:30:00', $event->startsAt?->toDateTimeString());
+        $this->assertSame('UTC', $event->startsAt?->timezoneName);
         $this->assertSame('america', $event->region);
         $this->assertSame('Brasil', $event->country);
         $this->assertSame('BRA', $event->countryCode);
@@ -89,11 +98,73 @@ class FirebetsCollectorTest extends TestCase
             'https://firebets.test/simulador/Apostas.aspx?idesporte=102&idpartida=123' => Http::response($this->marketDetailsHtml()),
         ]);
 
-        $events = app(FirebetsCollector::class)->collect();
+        $exception = null;
 
-        $this->assertCount(1, $events);
-        $this->assertSame('Flamengo RJ', $events->sole()->homeTeam);
-        Http::assertSentCount(4);
+        try {
+            app(FirebetsCollector::class)->collect();
+        } catch (PartialCollectionRateLimited $caughtException) {
+            $exception = $caughtException;
+        }
+
+        $this->assertInstanceOf(PartialCollectionRateLimited::class, $exception);
+        $this->assertCount(1, $exception->events);
+        $this->assertSame('Flamengo RJ', $exception->events->sole()->homeTeam);
+        $this->assertSame(429, $exception->rateLimitException->response->status());
+        Http::assertSentCount(3);
+    }
+
+    public function test_persists_available_odds_and_defers_a_source_after_a_weekly_page_is_limited(): void
+    {
+        $this->travelTo(CarbonImmutable::parse('2026-08-26 16:26:00', 'UTC'));
+        config()->set('services.bookmakers.firebets.games_url', 'https://firebets.test/simulador/jogos.aspx?idcampeonato=old');
+        Http::preventStrayRequests();
+        Http::fake([
+            'https://firebets.test/simulador/jogos.aspx?idcampeonato=old' => Http::response($this->firebetsTwoDayMenuHtml()),
+            'https://firebets.test/simulador/jogos.aspx?idesporte=102&idcampeonato=today' => Http::response($this->firebetsHtml()),
+            'https://firebets.test/simulador/jogos.aspx?idesporte=102&idcampeonato=tomorrow' => Http::response('error code: 1015', 429, ['Retry-After' => '7200']),
+        ]);
+        $collector = app(FirebetsCollector::class);
+        $this->mock(OddsCollectorRegistry::class, function ($mock) use ($collector): void {
+            $mock->shouldReceive('all')->twice()->andReturn([$collector]);
+        });
+
+        $limitedRun = app(CollectOddsAction::class)->execute();
+        $deferredRun = app(CollectOddsAction::class)->execute();
+
+        $limitedResult = $limitedRun->sourceResults()->firstOrFail();
+        $this->assertSame('failed', $limitedRun->status);
+        $this->assertSame('rate_limited', $limitedResult->status);
+        $this->assertSame(1, $limitedResult->events_count);
+        $this->assertSame(now()->addHours(2)->toDateTimeString(), $limitedResult->retry_at->toDateTimeString());
+        $this->assertSame('deferred', $deferredRun->status);
+        $this->assertDatabaseCount('market_odds', 3);
+        $this->assertDatabaseHas('events', [
+            'home_team' => 'Flamengo RJ',
+            'starts_at' => '2026-08-27 00:30:00',
+        ]);
+        Http::assertSentCount(3);
+    }
+
+    public function test_keeps_listed_odds_when_a_details_page_is_rate_limited(): void
+    {
+        config()->set('services.bookmakers.firebets.games_url', 'https://firebets.test/simulador/jogos.aspx?idcampeonato=old');
+        Http::preventStrayRequests();
+        Http::fake([
+            'https://firebets.test/simulador/jogos.aspx?idcampeonato=old' => Http::response($this->firebetsDailyMenuHtml()),
+            'https://firebets.test/simulador/jogos.aspx?idesporte=102&idcampeonato=today' => Http::response($this->firebetsHtml()),
+            'https://firebets.test/simulador/Apostas.aspx?idesporte=102&idpartida=123' => Http::response('error code: 1015', 403),
+        ]);
+
+        try {
+            app(FirebetsCollector::class)->collect();
+            $this->fail('Expected the source limit to be reported.');
+        } catch (PartialCollectionRateLimited $exception) {
+            $this->assertSame(403, $exception->rateLimitException->response->status());
+            $this->assertSame(['match_winner'], array_keys($exception->events->sole()->markets));
+            $this->assertSame(1.85, $exception->events->sole()->markets['match_winner']->selections[0]['odd']);
+        }
+
+        Http::assertSentCount(3);
     }
 
     private function firebetsDailyMenuHtml(): string

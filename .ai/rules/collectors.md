@@ -26,3 +26,6 @@ Public bookmaker pages reuse match-card HTML for promotional player-stat groups.
 
 ## Defer each rate-limited bookmaker independently
 Persist HTTP 429/Cloudflare 1015 as rate_limited with http_status and retry_at. Before collecting a source, honor its latest active retry_at and record deferred without making an HTTP request; use 1h, 3h, 6h, then 12h backoff and prefer a longer Retry-After, capped by configuration. Never delay healthy sources because another bookmaker is limited.
+
+## Persist match start times in UTC
+Public match cards show time in app.display_timezone. Convert the parsed Carbon start time to UTC before Eloquent persists it; timestamp columns omit timezone, so passing a local-time Carbon stores the wrong wall time. Keep source text separately and verify collection through database display.

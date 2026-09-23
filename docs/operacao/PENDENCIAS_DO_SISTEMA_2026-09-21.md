@@ -1,6 +1,6 @@
 # OddRadar — Pendências do sistema
 
-**Data do levantamento:** 21/09/2026  
+**Data do levantamento:** 21/09/2026
 **Escopo:** situação do desenvolvimento, publicação e operação do OddRadar nesta data.
 
 ## 1. Resumo executivo

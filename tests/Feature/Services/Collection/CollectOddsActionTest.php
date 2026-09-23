@@ -194,6 +194,25 @@ class CollectOddsActionTest extends TestCase
         $this->assertDatabaseCount('market_odds', 3);
     }
 
+    public function test_marks_the_run_failed_when_collector_registry_crashes_before_source_processing(): void
+    {
+        $this->mock(OddsCollectorRegistry::class, function ($mock): void {
+            $mock->shouldReceive('all')->once()->andThrow(new RuntimeException('Registry unavailable.'));
+        });
+
+        try {
+            app(CollectOddsAction::class)->execute();
+            $this->fail('Expected the registry exception.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame('Registry unavailable.', $exception->getMessage());
+        }
+
+        $this->assertDatabaseHas('collection_runs', [
+            'status' => 'failed',
+            'finished_at' => now()->toDateTimeString(),
+        ]);
+    }
+
     /**
      * @param  array<int, CollectedOddsEvent>  $events
      */

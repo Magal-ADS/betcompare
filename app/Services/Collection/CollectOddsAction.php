@@ -5,6 +5,7 @@ namespace App\Services\Collection;
 use App\Collectors\CollectedMarket;
 use App\Collectors\CollectedOddsEvent;
 use App\Collectors\OddsCollectorRegistry;
+use App\Collectors\PartialCollectionRateLimited;
 use App\Models\Bookmaker;
 use App\Models\CollectionRun;
 use App\Models\CollectionSourceResult;
@@ -50,6 +51,21 @@ final class CollectOddsAction
             'status' => self::STATUS_RUNNING,
             'started_at' => now(),
         ]);
+
+        try {
+            return $this->collectRun($collectionRun);
+        } catch (Throwable $exception) {
+            $collectionRun->update([
+                'status' => self::STATUS_FAILED,
+                'finished_at' => now(),
+            ]);
+
+            throw $exception;
+        }
+    }
+
+    private function collectRun(CollectionRun $collectionRun): CollectionRun
+    {
         $successfulSources = 0;
         $deferredSources = 0;
         $collectors = $this->collectorRegistry->all();
@@ -83,16 +99,25 @@ final class CollectOddsAction
                 ]);
                 $successfulSources++;
             } catch (Throwable $exception) {
-                $isRateLimited = $this->sourceRateLimitPolicy->isRateLimited($exception);
-                $retryAt = $isRateLimited && $exception instanceof RequestException
-                    ? $this->sourceRateLimitPolicy->nextRetryAt($bookmaker, $exception)
+                $partialEvents = null;
+                $requestException = $exception instanceof PartialCollectionRateLimited
+                    ? $exception->rateLimitException
+                    : ($exception instanceof RequestException ? $exception : null);
+                $isRateLimited = $requestException !== null && $this->sourceRateLimitPolicy->isRateLimited($requestException);
+                $retryAt = $isRateLimited
+                    ? $this->sourceRateLimitPolicy->nextRetryAt($bookmaker, $requestException)
                     : null;
+
+                if ($exception instanceof PartialCollectionRateLimited) {
+                    $partialEvents = $this->uniqueEvents($exception->events);
+                    $this->storeEvents($collectionRun, $bookmaker, $partialEvents);
+                }
 
                 Log::warning('OddRadar collection source failed.', [
                     'source' => $collector->source(),
                     'collection_run_id' => $collectionRun->id,
                     'exception' => $exception::class,
-                    'http_status' => $exception instanceof RequestException ? $exception->response->status() : null,
+                    'http_status' => $requestException?->response->status(),
                     'retry_at' => $retryAt?->toIso8601String(),
                 ]);
 
@@ -101,7 +126,9 @@ final class CollectOddsAction
                     'bookmaker_id' => $bookmaker->id,
                     'status' => $isRateLimited ? self::STATUS_RATE_LIMITED : self::STATUS_FAILED,
                     'error_message' => Str::limit($exception->getMessage(), 1000, ''),
-                    'http_status' => $exception instanceof RequestException ? $exception->response->status() : null,
+                    'events_count' => $partialEvents?->count() ?? 0,
+                    'collected_at' => $partialEvents === null ? null : now(),
+                    'http_status' => $requestException?->response->status(),
                     'retry_at' => $retryAt,
                 ]);
             }

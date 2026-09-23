@@ -46,25 +46,32 @@ abstract class PublicHtmlOddsCollector implements OddsCollector
     {
         $landingPage = $this->fetchHtml($this->gamesUrl());
         $weekUrls = $this->weekGamesUrls($landingPage['html'], $landingPage['url']);
-        $weekPages = collect($weekUrls)
-            ->map(function (string $url) use ($landingPage): ?array {
-                if ($url === $landingPage['url']) {
-                    return $landingPage;
-                }
+        $weekPages = collect();
+        $rateLimitException = null;
 
-                try {
-                    return $this->fetchHtml($url);
-                } catch (ConnectionException|RequestException $exception) {
-                    Log::warning('OddRadar weekly page could not be collected.', [
-                        'source' => $this->source(),
-                        'url' => $url,
-                        'status' => $exception instanceof RequestException ? $exception->response->status() : null,
-                    ]);
+        foreach ($weekUrls as $url) {
+            if ($url === $landingPage['url']) {
+                $weekPages->push($landingPage);
 
-                    return null;
+                continue;
+            }
+
+            try {
+                $weekPages->push($this->fetchHtml($url));
+            } catch (ConnectionException|RequestException $exception) {
+                Log::warning('OddRadar weekly page could not be collected.', [
+                    'source' => $this->source(),
+                    'url' => $url,
+                    'status' => $exception instanceof RequestException ? $exception->response->status() : null,
+                ]);
+
+                if ($exception instanceof RequestException && $this->isRateLimitedResponse($exception->response)) {
+                    $rateLimitException = $exception;
+
+                    break;
                 }
-            })
-            ->filter();
+            }
+        }
 
         if ($weekPages->isEmpty()) {
             $weekPages = collect([$landingPage]);
@@ -74,9 +81,20 @@ abstract class PublicHtmlOddsCollector implements OddsCollector
             ->unique(fn (array $listedEvent): string => $this->listedEventIdentity($listedEvent['event']))
             ->values();
 
-        return $this->addDetailMarkets($listedEvents)
+        if ($rateLimitException !== null) {
+            throw new PartialCollectionRateLimited($listedEvents->pluck('event'), $rateLimitException);
+        }
+
+        [$events, $rateLimitException] = $this->addDetailMarkets($listedEvents);
+        $events = $events
             ->filter(fn (CollectedOddsEvent $event): bool => $event->markets !== [])
             ->values();
+
+        if ($rateLimitException !== null) {
+            throw new PartialCollectionRateLimited($events, $rateLimitException);
+        }
+
+        return $events;
     }
 
     /** @return array{html: string, url: string} */
@@ -289,28 +307,43 @@ abstract class PublicHtmlOddsCollector implements OddsCollector
 
     /**
      * @param  Collection<int, array{event: CollectedOddsEvent, details_url: string|null}>  $listedEvents
-     * @return Collection<int, CollectedOddsEvent>
+     * @return array{Collection<int, CollectedOddsEvent>, RequestException|null}
      */
-    private function addDetailMarkets(Collection $listedEvents): Collection
+    private function addDetailMarkets(Collection $listedEvents): array
     {
         $eventsWithDetails = $listedEvents->filter(fn (array $listedEvent): bool => $listedEvent['details_url'] !== null);
 
         if ($eventsWithDetails->isEmpty()) {
-            return $listedEvents->pluck('event');
+            return [$listedEvents->pluck('event'), null];
         }
 
-        $responses = Http::pool(
-            fn (Pool $pool): array => $eventsWithDetails
-                ->map(fn (array $listedEvent, int $index) => $pool->as((string) $index)
-                    ->accept('text/html')
-                    ->timeout(10)
-                    ->connectTimeout(3)
-                    ->get($listedEvent['details_url']))
-                ->all(),
-            concurrency: $this->config->integer('oddradar.collection_detail_concurrency', 4),
-        );
+        $concurrency = max(1, $this->config->integer('oddradar.collection_detail_concurrency', 2));
+        $responses = [];
+        $rateLimitException = null;
 
-        return $listedEvents->map(function (array $listedEvent, int $index) use ($responses): CollectedOddsEvent {
+        foreach ($eventsWithDetails->chunk($concurrency) as $batch) {
+            $batchResponses = Http::pool(
+                fn (Pool $pool): array => $batch
+                    ->map(fn (array $listedEvent, int $index) => $pool->as((string) $index)
+                        ->accept('text/html')
+                        ->timeout(10)
+                        ->connectTimeout(3)
+                        ->get($listedEvent['details_url']))
+                    ->all(),
+                concurrency: $concurrency,
+            );
+            $responses += $batchResponses;
+
+            foreach ($batchResponses as $response) {
+                if ($response instanceof Response && $this->isRateLimitedResponse($response)) {
+                    $rateLimitException = $response->toException() ?? new RequestException($response);
+
+                    break 2;
+                }
+            }
+        }
+
+        $events = $listedEvents->map(function (array $listedEvent, int $index) use ($responses): CollectedOddsEvent {
             $event = $listedEvent['event'];
             $response = $responses[(string) $index] ?? null;
 
@@ -341,6 +374,8 @@ abstract class PublicHtmlOddsCollector implements OddsCollector
                 collectedAt: $event->collectedAt,
             );
         });
+
+        return [$events, $rateLimitException];
     }
 
     /** @return array<string, CollectedMarket> */
@@ -415,14 +450,20 @@ abstract class PublicHtmlOddsCollector implements OddsCollector
         $startsAt = CarbonImmutable::create($now->year, $month, (int) $day, $hour, $minute, 0, $now->timezone);
 
         if ($startsAt->lessThan($now->subMonths(6))) {
-            return $startsAt->addYear();
+            return $startsAt->addYear()->utc();
         }
 
         if ($startsAt->greaterThan($now->addMonths(6))) {
-            return $startsAt->subYear();
+            return $startsAt->subYear()->utc();
         }
 
-        return $startsAt;
+        return $startsAt->utc();
+    }
+
+    private function isRateLimitedResponse(Response $response): bool
+    {
+        return $response->status() === 429
+            || Str::contains($response->body(), 'error code: 1015', ignoreCase: true);
     }
 
     private function listedEventIdentity(CollectedOddsEvent $event): string

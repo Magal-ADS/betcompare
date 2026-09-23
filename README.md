@@ -1,6 +1,6 @@
-# BetCompare
+# OddRadar
 
-Aplicação Laravel com Laravel Boost e ambiente de desenvolvimento em Docker.
+Painel interno da Firebets para coletar e comparar odds públicas de futebol. Consulte a [documentação do produto e da operação](docs/README.md) para escopo, uso e implantação.
 
 ## Iniciar
 
@@ -24,4 +24,4 @@ O Laravel Boost está configurado em `boost.json` e `.mcp.json`. Para regenerar 
 ```bash
 docker compose exec app php artisan boost:install --guidelines --skills --mcp
 ```
-# betcompare
+# OddRadar
