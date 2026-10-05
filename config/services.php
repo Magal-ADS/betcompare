@@ -27,6 +27,42 @@ return [
             'website_url' => 'https://gbgoldbet.com',
             'is_primary' => false,
         ],
+        'm16sportsbet' => [
+            'name' => 'M16 Sports Bet',
+            'games_url' => env('M16SPORTSBET_GAMES_URL', 'https://m16sports-bet.jogos.app/sistema_v2/usuarios/simulador/desktop/jogos.aspx?idesporte=102&idcampeonato=574588'),
+            'website_url' => 'https://m16sports-bet.jogos.app',
+            'is_primary' => false,
+        ],
+        'chute13club' => [
+            'name' => 'Chute13 Club',
+            'games_url' => env('CHUTE13CLUB_GAMES_URL', 'https://chute13.club/web'),
+            'website_url' => 'https://chute13.club',
+            'is_primary' => false,
+        ],
+        'tropapb' => [
+            'name' => 'Tropa PB',
+            'games_url' => env('TROPAPB_GAMES_URL', 'https://tropapb.bet/'),
+            'website_url' => 'https://tropapb.bet',
+            'is_primary' => false,
+        ],
+        'esportesjl' => [
+            'name' => 'Esportes JL',
+            'games_url' => env('ESPORTESJL_GAMES_URL', 'https://esportesjl.com/sistema_v2/usuarios/simulador/desktop/jogos.aspx?idesporte=102&idcampeonato=574588'),
+            'website_url' => 'https://esportesjl.com',
+            'is_primary' => false,
+        ],
+        'palpitecerto' => [
+            'name' => 'Palpite Certo',
+            'games_url' => env('PALPITECERTO_GAMES_URL', 'https://palpitecerto.club/sistema_v2/usuarios/simulador/desktop/jogos.aspx?idesporte=102&idcampeonato=574588'),
+            'website_url' => 'https://palpitecerto.club',
+            'is_primary' => false,
+        ],
+        'teamsport' => [
+            'name' => 'Team Sport',
+            'games_url' => env('TEAMSPORT_GAMES_URL', 'https://teamsport.live/sistema_v2/usuarios/simulador/desktop/jogos.aspx?idesporte=102&idcampeonato=574588'),
+            'website_url' => 'https://teamsport.live',
+            'is_primary' => false,
+        ],
     ],
 
     /*

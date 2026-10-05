@@ -30,6 +30,7 @@ Evidências sobre a obtenção pública dos dados nas fontes:
 
 - [Prova técnica da Firebets](provas-tecnicas/PROVA_TECNICA_FIREBETS.md)
 - [Provas técnicas das concorrentes](provas-tecnicas/PROVAS_TECNICAS_CONCORRENTES.md)
+- [Novas fontes verificadas em 05/10/2026](provas-tecnicas/NOVAS_FONTES_2026-10-05.md)
 
 ## Ordem de leitura recomendada
 

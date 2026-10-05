@@ -4,8 +4,13 @@ namespace Tests\Feature\Collectors;
 
 use App\Collectors\A2BetsCollector;
 use App\Collectors\Chute13Collector;
+use App\Collectors\EsportesJLCollector;
 use App\Collectors\GBGoldBetCollector;
+use App\Collectors\M16SportsBetCollector;
 use App\Collectors\OddsCollector;
+use App\Collectors\PalpiteCertoCollector;
+use App\Collectors\TeamSportCollector;
+use App\Collectors\TropaPBCollector;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -50,6 +55,11 @@ class CompetitorCollectorsTest extends TestCase
             'Chute13' => [Chute13Collector::class, 'services.bookmakers.chute13.games_url', 'https://chute13.test/games', 'chute13'],
             'A2Bets' => [A2BetsCollector::class, 'services.bookmakers.a2bets.games_url', 'https://a2bets.test/games', 'a2bets'],
             'GB Gold Bet' => [GBGoldBetCollector::class, 'services.bookmakers.gbgoldbet.games_url', 'https://gbgoldbet.test/games', 'gbgoldbet'],
+            'M16 Sports Bet' => [M16SportsBetCollector::class, 'services.bookmakers.m16sportsbet.games_url', 'https://m16sportsbet.test/games', 'm16sportsbet'],
+            'Tropa PB' => [TropaPBCollector::class, 'services.bookmakers.tropapb.games_url', 'https://tropapb.test/games', 'tropapb'],
+            'Esportes JL' => [EsportesJLCollector::class, 'services.bookmakers.esportesjl.games_url', 'https://esportesjl.test/games', 'esportesjl'],
+            'Palpite Certo' => [PalpiteCertoCollector::class, 'services.bookmakers.palpitecerto.games_url', 'https://palpitecerto.test/games', 'palpitecerto'],
+            'Team Sport' => [TeamSportCollector::class, 'services.bookmakers.teamsport.games_url', 'https://teamsport.test/games', 'teamsport'],
         ];
     }
 
