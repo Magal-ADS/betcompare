@@ -19,8 +19,6 @@ ENV COMPOSER_ALLOW_SUPERUSER=1 \
 
 WORKDIR /var/www/html
 
-RUN printf 'memory_limit=256M\n' > /usr/local/etc/php/conf.d/99-oddradar-memory.ini
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         curl \
@@ -54,6 +52,8 @@ COPY --from=frontend /var/www/html/public/build ./public/build
 RUN mkdir -p storage/framework/{cache,sessions,testing,views} storage/logs bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache \
     && composer dump-autoload --optimize --no-interaction
+
+RUN printf 'memory_limit=256M\n' > /usr/local/etc/php/conf.d/99-oddradar-memory.ini
 
 EXPOSE 8000
 
