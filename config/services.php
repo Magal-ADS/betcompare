@@ -10,9 +10,9 @@ return [
             'is_primary' => true,
         ],
         'chute13' => [
-            'name' => 'Chute13',
-            'games_url' => env('CHUTE13_GAMES_URL', 'https://chute13.net'),
-            'website_url' => 'https://chute13.net',
+            'name' => 'Chute13.club',
+            'games_url' => env('CHUTE13_GAMES_URL', 'https://chute13.club/web'),
+            'website_url' => 'https://chute13.club',
             'is_primary' => false,
         ],
         'a2bets' => [
@@ -31,12 +31,6 @@ return [
             'name' => 'M16 Sports Bet',
             'games_url' => env('M16SPORTSBET_GAMES_URL', 'https://m16sports-bet.jogos.app/sistema_v2/usuarios/simulador/desktop/jogos.aspx?idesporte=102&idcampeonato=574588'),
             'website_url' => 'https://m16sports-bet.jogos.app',
-            'is_primary' => false,
-        ],
-        'chute13club' => [
-            'name' => 'Chute13 Club',
-            'games_url' => env('CHUTE13CLUB_GAMES_URL', 'https://chute13.club/web'),
-            'website_url' => 'https://chute13.club',
             'is_primary' => false,
         ],
         'tropapb' => [

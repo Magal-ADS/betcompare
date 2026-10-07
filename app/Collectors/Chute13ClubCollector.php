@@ -25,7 +25,7 @@ final class Chute13ClubCollector implements OddsCollector
 
     public function source(): string
     {
-        return 'chute13club';
+        return 'chute13';
     }
 
     /** @return Collection<int, CollectedOddsEvent> */
@@ -36,7 +36,7 @@ final class Chute13ClubCollector implements OddsCollector
             ->accept('text/html')
             ->timeout(10)
             ->connectTimeout(3)
-            ->get($this->config->string('services.bookmakers.chute13club.games_url'))
+            ->get($this->config->string('services.bookmakers.chute13.games_url'))
             ->throw();
         $this->throwIfRateLimited($page);
 
@@ -45,7 +45,7 @@ final class Chute13ClubCollector implements OddsCollector
         }
 
         $events = collect();
-        $apiUrl = rtrim($this->config->string('services.bookmakers.chute13club.website_url'), '/').'/web/leagues';
+        $apiUrl = rtrim($this->config->string('services.bookmakers.chute13.website_url'), '/').'/web/leagues';
 
         foreach (self::DATES as $date) {
             $response = Http::withOptions(['cookies' => $cookies])

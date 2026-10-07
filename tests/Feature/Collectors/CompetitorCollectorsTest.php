@@ -3,7 +3,6 @@
 namespace Tests\Feature\Collectors;
 
 use App\Collectors\A2BetsCollector;
-use App\Collectors\Chute13Collector;
 use App\Collectors\EsportesJLCollector;
 use App\Collectors\GBGoldBetCollector;
 use App\Collectors\M16SportsBetCollector;
@@ -52,7 +51,6 @@ class CompetitorCollectorsTest extends TestCase
     public static function collectors(): array
     {
         return [
-            'Chute13' => [Chute13Collector::class, 'services.bookmakers.chute13.games_url', 'https://chute13.test/games', 'chute13'],
             'A2Bets' => [A2BetsCollector::class, 'services.bookmakers.a2bets.games_url', 'https://a2bets.test/games', 'a2bets'],
             'GB Gold Bet' => [GBGoldBetCollector::class, 'services.bookmakers.gbgoldbet.games_url', 'https://gbgoldbet.test/games', 'gbgoldbet'],
             'M16 Sports Bet' => [M16SportsBetCollector::class, 'services.bookmakers.m16sportsbet.games_url', 'https://m16sportsbet.test/games', 'm16sportsbet'],

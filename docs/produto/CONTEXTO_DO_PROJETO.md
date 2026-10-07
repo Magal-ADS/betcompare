@@ -29,7 +29,7 @@ Toda decisão deve priorizar simplicidade, baixo custo, manutenção fácil, con
 | Papel | Fonte |
 | --- | --- |
 | Casa principal | Firebets — <https://firebets.net.br> |
-| Concorrente | Chute13 — <https://chute13.net> |
+| Concorrente | Chute13 — <https://chute13.club/web> |
 | Concorrente | A2Bets — <https://a2bets.com> |
 | Concorrente | GB Gold Bet — <https://gbgoldbet.com> |
 
@@ -113,7 +113,7 @@ A coleta deve ser desacoplada das camadas de normalização, comparação e visu
 ```text
 collectors/
   FirebetsCollector
-  Chute13Collector
+  Chute13ClubCollector
   A2BetsCollector
   GBGoldBetCollector
 ```

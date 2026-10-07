@@ -1,6 +1,6 @@
 # Novas fontes: verificação de 05/10/2026
 
-As seis fontes solicitadas foram adicionadas como concorrentes independentes. A verificação usou páginas e requisições públicas, sem autenticação ou automação de navegador. Os números abaixo são uma fotografia da coleta real feita nesta data; jogos e odds mudam com o tempo.
+Os seis sites solicitados foram verificados. O Chute13.club substitui a fonte Chute13 antiga; os outros cinco foram adicionados como concorrentes independentes. A verificação usou páginas e requisições públicas, sem autenticação ou automação de navegador. Os números abaixo são uma fotografia da coleta real feita nesta data; jogos e odds mudam com o tempo.
 
 | Fonte | Resultado da coleta real | Mercados encontrados | Observação |
 | --- | ---: | ---: | --- |
@@ -24,3 +24,7 @@ Nos cinco sites com a mesma plataforma de HTML, foram identificados cartões pú
 Após iniciar os serviços locais `db` e `app`, a execução 4 terminou com estado `completed` em 502,5 segundos. As fontes novas gravaram 109 jogos da M16, 128 do Chute13.club, 127 da Tropa PB, 139 da Esportes JL, 110 da Palpite Certo e 142 da Team Sport. As demais fontes também foram processadas; o Chute13 antigo retornou zero jogos, sem erro. A consulta do painel encontrou 217 jogos normalizados da semana e levou 0,65 segundo no ambiente local.
 
 A suíte completa passou com 48 testes e 255 asserções. A implantação em produção ainda exige a mesma versão da aplicação e do worker; os resultados locais não garantem o mesmo tempo de resposta dos sites ou do banco em produção.
+
+## Correção de 07/10/2026
+
+O painel de produção mostrava somente as quatro casas antigas porque o aplicativo havia sido recriado com a imagem nova, mas o serviço separado `oddradar-worker` ainda executava uma imagem de 13 dias antes. Na correção, o coletor JSON de `https://chute13.club/web` passou a usar o identificador existente `chute13`, substituindo o coletor HTML de `chute13.net`. Assim, a próxima coleta atualiza a casa já cadastrada, preserva seu histórico e evita uma coluna duplicada. A validação integrada acima retrata a versão anterior da implementação, que ainda tinha dez coletores; a versão corrigida tem nove. A suíte completa da versão corrigida passou com 48 testes e 251 asserções.

@@ -4,6 +4,7 @@ namespace Tests\Feature\Collectors;
 
 use App\Collectors\Chute13ClubCollector;
 use App\Collectors\OddsCollectorRegistry;
+use App\Models\Bookmaker;
 use App\Services\Collection\CollectOddsAction;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Http\Client\Request;
@@ -14,10 +15,19 @@ class Chute13ClubCollectorTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    public function test_registry_uses_the_new_chute13_site_only_once(): void
+    {
+        $chute13Collectors = collect(app(OddsCollectorRegistry::class)->all())
+            ->filter(fn ($collector): bool => $collector->source() === 'chute13');
+
+        $this->assertCount(1, $chute13Collectors);
+        $this->assertInstanceOf(Chute13ClubCollector::class, $chute13Collectors->sole());
+    }
+
     public function test_collects_public_football_1x2_and_converts_match_time_to_utc(): void
     {
-        config()->set('services.bookmakers.chute13club.games_url', 'https://chute13club.test/web');
-        config()->set('services.bookmakers.chute13club.website_url', 'https://chute13club.test');
+        config()->set('services.bookmakers.chute13.games_url', 'https://chute13club.test/web');
+        config()->set('services.bookmakers.chute13.website_url', 'https://chute13club.test');
         config()->set('app.display_timezone', 'America/Sao_Paulo');
         Http::preventStrayRequests();
         Http::fake([
@@ -30,7 +40,7 @@ class Chute13ClubCollectorTest extends TestCase
 
         $event = app(Chute13ClubCollector::class)->collect()->sole();
 
-        $this->assertSame('chute13club', $event->source);
+        $this->assertSame('chute13', $event->source);
         $this->assertSame('Flamengo', $event->homeTeam);
         $this->assertSame('Palmeiras', $event->awayTeam);
         $this->assertSame('2026-10-06T00:30:00+00:00', $event->startsAt->toIso8601String());
@@ -47,7 +57,7 @@ class Chute13ClubCollectorTest extends TestCase
 
     public function test_rejects_a_page_without_a_public_session_token(): void
     {
-        config()->set('services.bookmakers.chute13club.games_url', 'https://chute13club.test/web');
+        config()->set('services.bookmakers.chute13.games_url', 'https://chute13club.test/web');
         Http::preventStrayRequests();
         Http::fake(['https://chute13club.test/web' => Http::response('<html></html>')]);
 
@@ -59,8 +69,14 @@ class Chute13ClubCollectorTest extends TestCase
 
     public function test_stores_chute13_club_odds_in_a_collection_run(): void
     {
-        config()->set('services.bookmakers.chute13club.games_url', 'https://chute13club.test/web');
-        config()->set('services.bookmakers.chute13club.website_url', 'https://chute13club.test');
+        Bookmaker::create([
+            'slug' => 'chute13',
+            'name' => 'Chute13',
+            'website_url' => 'https://chute13.net',
+            'is_primary' => false,
+        ]);
+        config()->set('services.bookmakers.chute13.games_url', 'https://chute13club.test/web');
+        config()->set('services.bookmakers.chute13.website_url', 'https://chute13club.test');
         Http::preventStrayRequests();
         Http::fake([
             'https://chute13club.test/web' => Http::response('<meta name="csrf-token" content="public-page-token">'),
@@ -77,7 +93,12 @@ class Chute13ClubCollectorTest extends TestCase
         $run = app(CollectOddsAction::class)->execute();
 
         $this->assertSame('completed', $run->status);
-        $this->assertDatabaseHas('bookmakers', ['slug' => 'chute13club', 'name' => 'Chute13 Club']);
+        $this->assertDatabaseCount('bookmakers', 1);
+        $this->assertDatabaseHas('bookmakers', [
+            'slug' => 'chute13',
+            'name' => 'Chute13.club',
+            'website_url' => 'https://chute13club.test',
+        ]);
         $this->assertDatabaseHas('collection_source_results', [
             'collection_run_id' => $run->id,
             'status' => 'completed',
