@@ -41,7 +41,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: php artisan queue:work --sleep=2 --tries=1 --timeout=900
+    command: php artisan queue:work --sleep=2 --tries=1 --timeout=1800
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
@@ -53,7 +53,7 @@ services:
       DB_USERNAME: betcompare
       DB_PASSWORD: betcompare
       QUEUE_CONNECTION: database
-      DB_QUEUE_RETRY_AFTER: 960
+      DB_QUEUE_RETRY_AFTER: 1860
     volumes:
       - .:/var/www/html
     depends_on:

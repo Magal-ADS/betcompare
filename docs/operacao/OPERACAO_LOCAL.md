@@ -56,11 +56,11 @@ O fluxo atual é assíncrono:
 1. O operador clica em **“Atualizar odds agora”**.
 2. `RefreshOddsController` verifica o cooldown de 30 minutos e o marcador de coleta pendente.
 3. O sistema agenda um único job `CollectOdds` e redireciona imediatamente para o dashboard.
-4. O painel informa que a coleta começou em segundo plano e pode levar até 15 minutos.
+4. O painel informa que a coleta começou em segundo plano e pode levar até 30 minutos.
 5. O serviço `worker` consulta as fontes e persiste cada resultado separadamente.
 6. O operador pode continuar usando ou fechar o painel. Ao recarregar a página após alguns minutos, o dashboard mostra a última execução concluída.
 
-O job possui uma tentativa, timeout de 900 segundos e unicidade por 1.200 segundos. A fila usa `retry_after` de 960 segundos, evitando que uma coleta lenta seja executada em duplicidade.
+O job possui uma tentativa, timeout de 1.800 segundos e unicidade por 2.100 segundos. A fila usa `retry_after` de 1.860 segundos, evitando que uma coleta lenta seja executada em duplicidade. O marcador de coleta pendente expira em 35 minutos.
 
 Se outra coleta estiver pendente, o sistema não agenda uma segunda. Depois de uma execução concluída, novas atualizações manuais respeitam o cooldown configurado em `oddradar.collection_cooldown_minutes`.
 
@@ -102,7 +102,7 @@ Depois disso:
 1. acesse `http://localhost:8010/login`;
 2. entre com as credenciais configuradas no ambiente;
 3. clique em **“Atualizar odds agora”**;
-4. aguarde até 15 minutos e recarregue o dashboard.
+4. aguarde até 30 minutos e recarregue o dashboard.
 
 Histórico, eventos e odds removidos não são reconstruídos pelo seeder; uma nova coleta repopula somente os dados novamente disponíveis nas fontes.
 

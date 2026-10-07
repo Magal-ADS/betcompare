@@ -25,12 +25,12 @@ final class RefreshOddsController extends Controller
             );
         }
 
-        if (! Cache::add(CollectOdds::PENDING_CACHE_KEY, true, now()->addMinutes(20))) {
+        if (! Cache::add(CollectOdds::PENDING_CACHE_KEY, true, now()->addMinutes(CollectOdds::PENDING_MINUTES))) {
             return to_route('dashboard')->with('status', 'Já existe uma atualização de odds em andamento.');
         }
 
         CollectOdds::dispatch();
 
-        return to_route('dashboard')->with('status', 'Atualização iniciada em segundo plano. A coleta pode levar até 15 minutos. Você pode continuar usando o painel enquanto as odds são coletadas.');
+        return to_route('dashboard')->with('status', 'Atualização iniciada em segundo plano. A coleta pode levar até 30 minutos. Você pode continuar usando o painel enquanto as odds são coletadas.');
     }
 }

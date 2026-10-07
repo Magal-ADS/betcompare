@@ -28,3 +28,9 @@ A suíte completa passou com 48 testes e 255 asserções. A implantação em pro
 ## Correção de 07/10/2026
 
 O painel de produção mostrava somente as quatro casas antigas porque o aplicativo havia sido recriado com a imagem nova, mas o serviço separado `oddradar-worker` ainda executava uma imagem de 13 dias antes. Na correção, o coletor JSON de `https://chute13.club/web` passou a usar o identificador existente `chute13`, substituindo o coletor HTML de `chute13.net`. Assim, a próxima coleta atualiza a casa já cadastrada, preserva seu histórico e evita uma coluna duplicada. A validação integrada acima retrata a versão anterior da implementação, que ainda tinha dez coletores; a versão corrigida tem nove. A suíte completa da versão corrigida passou com 48 testes e 251 asserções.
+
+## Verificação em produção de 07/10/2026
+
+A aplicação estava atualizada, mas o worker ainda executava a imagem antiga. Após atualizar o worker para a mesma versão da aplicação, a coleta 8 processou Firebets (215 jogos), Chute13.club (420), A2Bets (184), GB Gold Bet (152), M16 (169), Tropa PB (213) e Esportes JL (225), todos sem erro de fonte. Palpite Certo e Team Sport não chegaram a ser processados: o job atingiu o limite de 15 minutos durante a gravação das odds, entrou em `failed_jobs` e deixou a execução 8 com status `running`.
+
+O tempo integrado local de 8 minutos não representou o custo de produção. O limite do job e do worker foi ampliado para 30 minutos, o prazo de nova tentativa da fila para 31 minutos e o bloqueio de coletas simultâneas para 35 minutos. O tratamento de falha do job agora encerra execuções que ficaram com status `running`. A execução 8 deve ser marcada como falha e uma nova coleta completa deve confirmar as nove fontes em produção.

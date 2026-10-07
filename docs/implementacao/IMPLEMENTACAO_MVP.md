@@ -133,7 +133,7 @@ Dados ausentes nunca são tratados como odd zero.
 
 No dashboard, o botão **“Atualizar odds agora”** envia `POST /atualizar-odds`.
 
-A requisição agenda um job único e retorna imediatamente ao dashboard. Um worker executa a coleta em segundo plano, com timeout de 15 minutos. A mensagem de confirmação informa esse prazo ao operador, que pode continuar usando ou fechar o painel durante o processamento.
+A requisição agenda um job único e retorna imediatamente ao dashboard. Um worker executa a coleta em segundo plano, com timeout de 30 minutos. A mensagem de confirmação informa esse prazo ao operador, que pode continuar usando ou fechar o painel durante o processamento.
 
 Para cada fonte:
 
@@ -275,7 +275,7 @@ php artisan config:cache
 
 O seeder só cria o super administrador caso o e-mail ainda não exista; por isso, reexecutá-lo não redefine a senha de uma conta já criada. Após o primeiro deploy, mantenha as variáveis de administrador como segredos do Dockploy e nunca as coloque no Git.
 
-Em produção, a fila roda no serviço Docker Swarm separado `oddradar-worker`, usando a mesma imagem e as mesmas variáveis da aplicação. Depois de cada deploy do app no Dokploy, atualize a imagem do worker e confirme que a nova tarefa está `Running` antes de usar o botão de coleta. Executar apenas `queue:restart` não substitui a imagem de um serviço separado. Mantenha uma réplica do worker, `--tries=1`, `--timeout=900` e `DB_QUEUE_RETRY_AFTER=960`.
+Em produção, a fila roda no serviço Docker Swarm separado `oddradar-worker`, usando a mesma imagem e as mesmas variáveis da aplicação. Depois de cada deploy do app no Dokploy, atualize a imagem do worker e confirme que a nova tarefa está `Running` antes de usar o botão de coleta. Executar apenas `queue:restart` não substitui a imagem de um serviço separado. Mantenha uma réplica do worker, `--tries=1`, `--timeout=1800` e `DB_QUEUE_RETRY_AFTER=1860`.
 
 ```bash
 docker service update --force --image oddradar-app-xmcf8x:latest oddradar-worker

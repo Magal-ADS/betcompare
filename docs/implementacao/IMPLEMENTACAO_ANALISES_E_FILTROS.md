@@ -112,7 +112,7 @@ O fim do cooldown interno somente libera uma nova tentativa; ele não garante qu
 
 Os cartões de “Status das fontes” representam o resultado da última coleta concluída. Portanto, uma fonte permanece marcada como “Falhou — Limite temporário da fonte atingido” até que uma coleta posterior dessa mesma fonte termine com sucesso. O aviso de cooldown exibido acima do painel se refere ao clique atual e não substitui o resultado histórico mostrado nos cartões.
 
-O clique em “Atualizar odds agora” apenas agenda uma tarefa única na fila e devolve o controle do navegador imediatamente. O painel informa que a coleta pode levar até 15 minutos. Um worker executa a coleta em segundo plano. A combinação de marcador atômico no cache e job único impede cliques repetidos de enfileirarem coletas simultâneas. O job possui uma tentativa, timeout de 900 segundos e `retry_after` de 960 segundos; assim, uma coleta lenta não é duplicada pelo worker e uma falha externa não dispara novas tentativas contra a fonte. O procedimento operacional completo está em [OPERACAO_LOCAL.md](../operacao/OPERACAO_LOCAL.md).
+O clique em “Atualizar odds agora” apenas agenda uma tarefa única na fila e devolve o controle do navegador imediatamente. O painel informa que a coleta pode levar até 30 minutos. Um worker executa a coleta em segundo plano. A combinação de marcador atômico no cache e job único impede cliques repetidos de enfileirarem coletas simultâneas. O job possui uma tentativa, timeout de 1.800 segundos e `retry_after` de 1.860 segundos; assim, uma coleta lenta não é duplicada pelo worker e uma falha externa não dispara novas tentativas contra a fonte. O procedimento operacional completo está em [OPERACAO_LOCAL.md](../operacao/OPERACAO_LOCAL.md).
 
 ## 5. Dados e migrations
 
@@ -193,7 +193,7 @@ php artisan config:clear
 Também é obrigatório manter um worker de fila ativo:
 
 ```bash
-php artisan queue:work --sleep=2 --tries=1 --timeout=900
+php artisan queue:work --sleep=2 --tries=1 --timeout=1800
 ```
 
 No ambiente Docker local, o serviço `worker` do `docker-compose.yml` executa esse processo. Em seguida, execute “Atualizar odds agora” para popular a semana e os novos mercados; o painel pode continuar sendo usado durante a coleta.
