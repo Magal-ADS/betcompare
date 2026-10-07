@@ -38,7 +38,7 @@ final class DashboardController extends Controller
             : $oddsComparisonService->availableFilters($collectionRun);
         $comparisons = $collectionRun === null
             ? new LengthAwarePaginator([], 0, 15)
-            : $oddsComparisonService->paginateForRun($collectionRun, $filters);
+            : $oddsComparisonService->paginateForRun($collectionRun, $filters, 5);
         $comparisons->withQueryString();
 
         return view('dashboard', [

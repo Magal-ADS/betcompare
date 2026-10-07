@@ -157,9 +157,12 @@ final class OddsComparisonService
     private function oddsRelationships(CollectionRun $collectionRun): array
     {
         return [
-            'sourceEvents.bookmaker',
+            'sourceEvents:id,event_id,bookmaker_id',
+            'sourceEvents.bookmaker:id,slug',
             'sourceEvents.marketOdds' => function (HasMany $query) use ($collectionRun): void {
-                $query->where('collection_run_id', $collectionRun->id)->orderBy('id');
+                $query->where('collection_run_id', $collectionRun->id)
+                    ->select(['id', 'source_event_id', 'market_key', 'selection_key', 'selection_name', 'odd'])
+                    ->orderBy('id');
             },
         ];
     }

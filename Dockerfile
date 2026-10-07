@@ -19,6 +19,8 @@ ENV COMPOSER_ALLOW_SUPERUSER=1 \
 
 WORKDIR /var/www/html
 
+RUN printf 'memory_limit=256M\n' > /usr/local/etc/php/conf.d/99-oddradar-memory.ini
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         curl \

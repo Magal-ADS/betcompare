@@ -36,3 +36,9 @@ A aplicação estava atualizada, mas o worker ainda executava a imagem antiga. A
 O tempo integrado local de 8 minutos não representou o custo de produção. O limite do job e do worker foi ampliado para 30 minutos, o prazo de nova tentativa da fila para 31 minutos e o bloqueio de coletas simultâneas para 35 minutos. O tratamento de falha do job agora encerra execuções que ficariam com status `running`.
 
 Após respeitar o intervalo entre coletas, a execução 9 terminou com status `completed` em 16 minutos e 27 segundos. As nove casas concluíram sem erros: Firebets (208 jogos), Chute13.club (412), A2Bets (175), GB Gold Bet (145), M16 (162), Tropa PB (207), Esportes JL (219), Palpite Certo (154) e Team Sport (224). Foram gravadas 251.216 odds. O painel encontrou 601 jogos para comparação e respondeu à consulta em 1,2 segundo. Há nove casas cadastradas, sem duplicata do Chute13 antigo. Uma casa pode aparecer com traço em um jogo específico quando não oferece odds para aquele jogo; isso não indica falha geral da fonte.
+
+## Erro 500 do painel após a coleta
+
+Após a execução 9, o painel passou a responder HTTP 500 para uma página filtrada. O log de produção registrou esgotamento do limite de memória do PHP, configurado em 128 MB. A montagem de uma página com 15 jogos chegou a cerca de 178 MB e gerou aproximadamente 32 MB de HTML, pois cada jogo inclui todas as análises e as odds das nove casas.
+
+A correção limita o painel a cinco jogos por página, carrega somente os campos de odds usados na comparação e eleva o limite de memória do contêiner para 256 MB. A coleta e os dados gravados não precisaram ser refeitos.
